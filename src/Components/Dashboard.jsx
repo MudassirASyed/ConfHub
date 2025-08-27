@@ -197,7 +197,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                   Streamline Your
                 </span>
                 <br />
-                <span className="text-gray-800">Academic Events</span>
+                <span className="text-gray-800">Academicc Events</span>
               </h1>
               
               <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-lg">
