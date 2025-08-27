@@ -19,7 +19,7 @@ const setButtonLoading = (index, action, isLoading) => {
   useEffect(() => {
     const fetchOrganizers = async () => {
       try {
-        const response = await axios.get('https://amused-fulfillment-production.up.railway.app/api/organizers');
+        const response = await axios.get('http://localhost:1337/api/organizers');
         const allRequests = response.data.data;
 
         const pending = allRequests.filter(req => req.reqStatus === 'pending');
@@ -41,7 +41,7 @@ const setButtonLoading = (index, action, isLoading) => {
 
   const updateRequestStatus = async (id, status) => {
     try {
-      const response = await axios.put('https://amused-fulfillment-production.up.railway.app/api/organizers/update-status', {
+      const response = await axios.put('http://localhost:1337/api/organizers/update-status', {
         id,
         status,
       });
