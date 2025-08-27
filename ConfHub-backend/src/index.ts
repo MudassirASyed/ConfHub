@@ -1,5 +1,7 @@
 // import type { Core } from '@strapi/strapi';
 import createDefaultAdmin from './extensions/users-permissions/admin-user';
+const { checkSMTPPorts } = require("../testpost");
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -18,5 +20,10 @@ export default {
    */
   async bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {
       await createDefaultAdmin(strapi);
+      (async () => {
+  console.log("🚀 Checking SMTP ports...");
+  await checkSMTPPorts();
+})();
+
   },
 };

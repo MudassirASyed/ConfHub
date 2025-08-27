@@ -1,5 +1,5 @@
 const createDefaultAdmin = async (strapi: any) => {
-  const adminEmail =  'admin@confhub.com';
+  const adminEmail =  'admin@bzchair.com';
   const adminUsername = 'admin';
   const adminPassword =  'admin123';
 
