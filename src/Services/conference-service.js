@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_API_URL = 'https://amused-fulfillment-production.up.railway.app/api/conference'; // Adjust based on your backend endpoint
+const BASE_API_URL = 'https://confhub-production-0226.up.railway.app/api/conference'; // Adjust based on your backend endpoint
 
 export const createConference = async (data) => {
     try {

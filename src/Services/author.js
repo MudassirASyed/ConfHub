@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Set your correct backend URL here
-const BASE_API_URL = "https://amused-fulfillment-production.up.railway.app/api/author"; 
+const BASE_API_URL = "https://confhub-production-0226.up.railway.app/api/author"; 
 
 export const registerAuthor = async (data) => {
     try {

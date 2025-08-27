@@ -115,7 +115,7 @@ const [activeTab, setActiveTab] = useState('remaining');
   useEffect(() => {
     const fetchReviewers = async () => {
       try {
-        const response = await axios.get(`https://amused-fulfillment-production.up.railway.app/api/reviewers`);
+        const response = await axios.get(`https://confhub-production-0226.up.railway.app/api/reviewers`);
         const reviewerData = response.data.data.map((r) => ({
           id: r.id,
           name: r.firstName + r.lastName,
@@ -150,7 +150,7 @@ const [activeTab, setActiveTab] = useState('remaining');
     const fetchConferenceDetails = async () => {
       try {
         const response = await axios.get(
-          `https://amused-fulfillment-production.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate]=*&populate[Organizer][populate]=*`
+          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate]=*&populate[Organizer][populate]=*`
         );
         confData = response.data.data;
         setConference(confData);
@@ -213,7 +213,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       console.log("payy", payload);
 
       const response = await axios.post(
-        "https://amused-fulfillment-production.up.railway.app/api/organizers/final-decision",
+        "https://confhub-production-0226.up.railway.app/api/organizers/final-decision",
         payload
       );
 
@@ -256,7 +256,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     try {
       const response = await axios.post(
-        "https://amused-fulfillment-production.up.railway.app/api/conferences/updateReviewDeadline",
+        "https://confhub-production-0226.up.railway.app/api/conferences/updateReviewDeadline",
         payload
       );
 
@@ -281,7 +281,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     try {
       const response = await axios.post(
-        "https://amused-fulfillment-production.up.railway.app/api/conferences/updateConferenceStatus",
+        "https://confhub-production-0226.up.railway.app/api/conferences/updateConferenceStatus",
         payload
       );
 
@@ -332,7 +332,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       // Replace with your actual API endpoint
       const response = await axios.post(
-        "https://amused-fulfillment-production.up.railway.app/api/organizers/updateReviewFormFields",
+        "https://confhub-production-0226.up.railway.app/api/organizers/updateReviewFormFields",
         payload
       );
 
@@ -380,7 +380,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     console.log("Payload to send:", payload);
 
     axios
-      .post("https://amused-fulfillment-production.up.railway.app/api/organizers/assign-reviewers", payload)
+      .post("https://confhub-production-0226.up.railway.app/api/organizers/assign-reviewers", payload)
       .then((res) => {
         console.log("Reviewers assigned successfully", res.data);
         setSelectedExistingReviewers([]);
@@ -1272,7 +1272,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                           Submission_deadline: newDeadline,
                         };
                         const response = await axios.post(
-                          "https://amused-fulfillment-production.up.railway.app/api/conferences/updateSubmissiondate",
+                          "https://confhub-production-0226.up.railway.app/api/conferences/updateSubmissiondate",
                           payload
                         );
 

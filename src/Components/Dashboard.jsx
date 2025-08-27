@@ -48,7 +48,7 @@ const [pageSize, setPageSize] = useState(10);
     const fetchConferences = async () => {
       try {
 
-        const response = await axios.get('https://amused-fulfillment-production.up.railway.app/api/conferences', {
+        const response = await axios.get('https://confhub-production-0226.up.railway.app/api/conferences', {
 
           params: {
             filters: {

@@ -14,7 +14,7 @@ const PaperReviewPage = () => {
         console.log('paper id',id);
         
           const response = await axios.get(
-  `https://amused-fulfillment-production.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
+  `https://confhub-production-0226.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
 ); 
         const data = response.data;
         setReviewData(data.data);

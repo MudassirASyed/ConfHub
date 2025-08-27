@@ -36,18 +36,18 @@ const username=storedUser.username
 
       try {
         const userResponse = await axios.get(
-          `https://amused-fulfillment-production.up.railway.app/api/users/${userId}?populate=reviewerId`
+          `https://confhub-production-0226.up.railway.app/api/users/${userId}?populate=reviewerId`
         );
 
         const domain = userResponse.data?.reviewerId?.domain;
 
         const [ongoingRes, completedRes, assignedRes] = await Promise.all([
-          axios.get("https://amused-fulfillment-production.up.railway.app/api/papers?populate=*"),
+          axios.get("https://confhub-production-0226.up.railway.app/api/papers?populate=*"),
           axios.get(
-            "https://amused-fulfillment-production.up.railway.app/api/papers?populate[review][populate]=reviewer&populate=conference"
+            "https://confhub-production-0226.up.railway.app/api/papers?populate[review][populate]=reviewer&populate=conference"
           ),
           axios.get(
-            `https://amused-fulfillment-production.up.railway.app/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
+            `https://confhub-production-0226.up.railway.app/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
           ),
         ]);
 
