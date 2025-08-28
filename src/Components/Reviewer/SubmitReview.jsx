@@ -53,7 +53,9 @@ const SubmitReview = () => {
     const fetchPaperDetails = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:1337/api/papers?filters[id][$eq]=${id}&populate=conference`
+
+          `https://confhub-production-0226.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=conference`
+
         );
         const paper = res.data.data[0];
         setPaperDetails(paper);
@@ -78,7 +80,9 @@ const SubmitReview = () => {
   //     if (!reviewerId || !id) return;
   //     try {
   //       const res = await axios.get(
-  //         `http://localhost:1337/api/reviews?filters[paperId][$eq]=${id}&filters[reviewerId][$eq]=${reviewerId}&populate=*`
+
+  //         `https://confhub-production-0226.up.railway.app/api/reviews?filters[paperId][$eq]=${id}&filters[reviewerId][$eq]=${reviewerId}&populate=*`
+
   //       );
   //       if (res.data.data.length > 0) {
   //         setExistingReview(res.data.data[0].attributes);

@@ -2,7 +2,22 @@ export default [
   'strapi::logger',
   'strapi::errors',
   'strapi::security',
-  'strapi::cors',
+
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      origin: [
+        'https://bzchair.netlify.app', // your Netlify frontend
+        'https://confhub-production-0226.up.railway.app' // backend
+      ],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      keepHeaderOnError: true,
+      credentials: true, // allow cookies/tokens if needed
+    },
+  },
+
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
