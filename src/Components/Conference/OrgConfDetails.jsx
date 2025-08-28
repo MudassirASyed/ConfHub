@@ -155,7 +155,7 @@ const [activeTab, setActiveTab] = useState('remaining');
       try {
         const response = await axios.get(
 
-          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}}&populate[Papers][populate][file][populate]=*
+          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer
 &populate[Organizer][populate]=*`
 
