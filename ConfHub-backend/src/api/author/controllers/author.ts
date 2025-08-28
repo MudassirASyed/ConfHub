@@ -262,7 +262,7 @@ const authorEmail = author.authorEmail
                 });
                 newAuthorIds.push({ id: newAuthor.id });
                 try {
-                  const registerUrl = 'https://confhubb.netlify.app/register';
+                  const registerUrl = 'https://bzchair.netlify.app/register';
                   await sendEmail(
                     author,
                     'You have been added as a Co-Author in bzchair',
@@ -356,7 +356,7 @@ const htmlBody = `
     <li><strong>Title:</strong> "${paperTitle}"</li>
     <li><strong>Conference:</strong> ${conferenceTitle}</li>
   </ul>
-  <p>Thank you for your contribution.</p>
+  <p>Now wait for the further process.Thank you for your contribution.</p>
   <p>Best regards,<br/>The Organizing Committee</p>
 `;
 
