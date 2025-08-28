@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import { dashboard_bg } from "../../assets/Images";
-
+import { ArrowLeft } from "lucide-react";
 const ConferenceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -50,8 +50,21 @@ const ConferenceDetails = () => {
             conference.map((conf) => (
               <div
                 key={conf.id}
-                className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden"
+                className="bg-white bg-opacity-90 rounded-lg shadow-2xl shadow-black/40 drop-shadow-2xl overflow-hidden"
               >
+                <div className="relative flex items-center justify-center mb-6 p-10">
+  <button
+      onClick={() => navigate("/")}
+    className="absolute left-4 top-10 rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition"
+  >
+    <ArrowLeft className="h-7 w-7" />
+  </button>
+
+  <h2 className="text-3xl font-bold text-blue-700 text-center">
+    Submit Your Paper
+  </h2>
+</div>
+
                 <div className="p-6">
                   <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-pink-500 bg-clip-text text-transparent">
                     {conf.Conference_title}
@@ -76,6 +89,10 @@ const ConferenceDetails = () => {
                         <tr className="bg-gray-50">
                           <td className="px-6 py-4 font-semibold">Description</td>
                           <td className="px-6 py-4">{conf.Description}</td>
+                        </tr>
+                         <tr className="bg-gray-50">
+                          <td className="px-6 py-4 font-semibold">Conference Topics</td>
+                          <td className="px-6 py-4">{conf.Conference_Topics}</td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 font-semibold">Status</td>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from './Layouts/Layout';
+import { ArrowLeft } from "lucide-react";
 
 const AdminConferenceManager = () => {
   const [conferences, setConferences] = useState([]);
@@ -163,7 +164,16 @@ const handleReject = async (index) => {
   return (
     <Layout>
       <div className="main-content px-8 py-6">
-        <h1 className="text-3xl font-bold mb-6">Approve and Reject Conference Request</h1>
+      <div className="flex items-center gap-3 mb-10">
+  <button
+    onClick={() => window.history.back()}
+    className="rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition"
+  >
+    <ArrowLeft className="h-5 w-5" />
+  </button>
+  <h1 className="text-2xl font-bold">Approve or Reject Conference Request</h1>
+</div>
+
 
         <div className="flex space-x-4 mb-6">
           <button

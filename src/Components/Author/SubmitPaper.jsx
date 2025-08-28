@@ -4,7 +4,7 @@ import Layout from './Layouts/Layout';
 import axios from 'axios';
 import { useParams, useNavigate } from "react-router-dom";
 import { submitPaper } from '../../Services/author.js';
-
+import { ArrowLeft } from "lucide-react";
 const PaperSubmissionForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -154,12 +154,22 @@ const PaperSubmissionForm = () => {
           <div className="max-w-4xl mx-auto">
             {/* Header Card */}
             <div className="bg-white rounded-2xl shadow-lg mb-8 overflow-hidden">
+              
               <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-8 py-6">
-                <h1 className="text-3xl font-bold text-white mb-2">{conference.Conference_title}</h1>
-                <div className="flex items-center text-blue-100">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <span className="text-lg">Paper Submission Deadline: {conference.Submission_deadline}</span>
-                </div>
+                 <button
+      onClick={() => window.history.back()}
+      className="rounded-full p-2 bg-white  text-blue-600 transition mr-10"
+    >
+      <ArrowLeft className="h-7 w-7" />
+    </button>
+                <h1 className="text-3xl font-bold text-white mb-2 text-center">{conference.Conference_title}</h1>
+                
+<div className="flex items-center justify-center text-blue-100">
+  <Calendar className="h-5 w-5 mr-2" />
+  <span className="text-lg">
+    Paper Submission Deadline: {conference.Submission_deadline}
+  </span>
+</div>
               </div>
               <div className="px-8 py-6">
                 <h2 className="text-2xl font-semibold text-gray-800 text-center">
@@ -198,14 +208,19 @@ const PaperSubmissionForm = () => {
                     <span className="text-red-500">*</span>
                   </div>
                   <textarea
-                    name="abstract"
-                    value={formData.abstract}
-                    onChange={handleInputChange}
-                    placeholder="Enter your Paper Abstract"
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 hover:border-gray-400 resize-vertical"
-                    required
-                  />
+                      name="abstract"
+                      value={formData.abstract}
+                        onChange={handleInputChange}
+                        placeholder="Enter your Paper Abstract"
+                        rows={6}
+                        className="w-full min-h-[0px] px-4 py-3 border border-gray-300 rounded-xl 
+                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+                                       outline-none transition-all duration-200 hover:border-gray-400 
+                                  resize-y text-base"
+                        required
+                      />
+
+                  
                 </div>
 
                 {/* File Upload Section */}

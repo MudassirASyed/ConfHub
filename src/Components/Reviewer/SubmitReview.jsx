@@ -4,6 +4,7 @@ import Layout from "./Layouts/Layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { submitReview } from "../../Services/reviewerService";
 import { Edit3, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft } from "lucide-react";
 // Rating options
 const ratingOptions = [
   { label: "Strongly Disagree", value: 0 },
@@ -139,21 +140,34 @@ const SubmitReview = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center min-h-screen px-4 py-10 bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl">
-          <h2 className="text-2xl font-bold text-center mb-6">Submit Your Review</h2>
+      <div className="flex justify-center items-center min-h-screen px-4 py-10">
+        <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-5xl shadow-2xl shadow-black/40 drop-shadow-2xl">
+<div className="relative flex items-center justify-center mb-50">
+  <button
+    onClick={() => window.history.back()}
+    className="absolute left-0 rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition"
+  >
+    <ArrowLeft className="h-7 w-7" />
+  </button>
+
+  <h2 className="text-3xl font-bold text-blue-700 text-center">
+    Submit Your Review
+  </h2>
+</div>
+
 
           {paperDetails ? (
-            <div className="mb-6 text-sm text-gray-700 space-y-1">
-              <p><strong>Paper Id:</strong> {paperDetails.id}</p>
-              <p><strong>Title:</strong> {paperDetails.Paper_Title}</p>
-              <p><strong>Author:</strong> {paperDetails.Author}</p>
-              <p><strong>Conference:</strong> {paperDetails.conference?.Conference_title}</p>
-              <p><strong>Deadline:</strong> {paperDetails.conference?.Review_deadline}</p>
-            </div>
-          ) : (
-            <p className="text-gray-500">Loading paper details...</p>
-          )}
+  <div className="mb-7 mt-20 text-2xl  text-left w-full">
+    <p className="text-left text-lg mb-2"><strong>Paper Id:</strong> {paperDetails.id}</p>
+    <p className="text-left text-lg mb-2"><strong>Title:</strong> {paperDetails.Paper_Title}</p>
+    <p className="text-left text-lg mb-2"><strong>Author:</strong> {paperDetails.Author}</p>
+    <p className="text-left text-lg mb-2"><strong>Conference:</strong> {paperDetails.conference?.Conference_title}</p>
+    <p className="text-left text-lg mb-2"><strong>Deadline:</strong> {paperDetails.conference?.Review_deadline}</p>
+  </div>
+) : (
+  <p className="text-gray-500 text-left">Loading paper details...</p>
+)}
+
 
           
           <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white rounded-lg shadow-xl">

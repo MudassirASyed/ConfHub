@@ -168,7 +168,7 @@ const handleReject = async (index) => {
   return (
     <Layout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Welcome to Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-6 text-sky-600 text-center">Welcome to Admin Dashboard</h1>
 <h1 className="text-2xl font-bold mb-6 text-gray-800">Approve or Reject Organizer Account Request</h1>
 
         <div className="mb-4 flex gap-4">

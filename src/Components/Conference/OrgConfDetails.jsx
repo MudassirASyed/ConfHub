@@ -6,6 +6,8 @@ import "./ConferenceDetails.css";
 import Header from "../Layouts/Header";
 import Footer from "./Footer";
 import axios from "axios";
+import { Download } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -150,7 +152,9 @@ const [activeTab, setActiveTab] = useState('remaining');
     const fetchConferenceDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate]=*&populate[Organizer][populate]=*`
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
+&populate[Papers][populate][review][populate]=reviewer
+&populate[Organizer][populate]=*`
         );
         confData = response.data.data;
         setConference(confData);
@@ -423,7 +427,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     <>
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <section className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 shadow-2xl shadow-black/40 drop-shadow-2xl">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -436,8 +440,14 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                   {conference.map((conf) => (
                     <div key={conf.id} className="space-y-8">
                       <div className="flex justify-between items-start">
+                        <button
+    onClick={() => window.history.back()}
+    className="rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition"
+  >
+    <ArrowLeft className="h-7 w-7" />
+  </button>
                         <div className="flex-1">
-                          <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                          <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-center">
                             {conf.Conference_title}
                           </h1>
                           <p className="mt-2 text-lg text-gray-600 leading-relaxed">
@@ -450,7 +460,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                             {conf.Status}
                           </span>
                         </div>
-                       {conf.Status !== "completed" && (
+                     {conf.Status !== "completed" && new Date(conf.Start_date) < new Date() && (
   <button
     onClick={updateConferenceStatus}
     disabled={isUpdating}
@@ -462,6 +472,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     {isUpdating ? "Updating…" : "Mark as Completed"}
   </button>
 )}
+
 
 
 
@@ -770,7 +781,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       return filteredPapers.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 shadow-2xl shadow-black/40 drop-shadow-2xl">
             {paginatedPapers.map((paper) => (
               <div
                 key={paper.id}
@@ -786,9 +797,24 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                       {paper.Paper_Title}
                     </h4>
                   </div>
-                  <p className="text-sm text-gray-500 font-medium">
-                    Paper ID: #{paper.id || "N/A"}
-                  </p>
+                <div className="flex items-center justify-center gap-3 mt-2">
+  <p className="text-lg text-black-500 font-medium pt-5">
+    Paper ID: #{paper.id || "N/A"}
+  </p>
+
+  {paper.file?.url && (
+    <a
+      href={paper.file.url}
+      download={paper.file.name}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 hover:bg-blue-800 text-white rounded-md transition"
+    >
+      <Download className="w-4 h-4" />
+      Download
+    </a>
+  )}
+</div>
                   <h4
                     className={`text-xl font-bold ${
                       paper.finalDecisionByOrganizer === "Accept"
@@ -996,13 +1022,13 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
               {/* Enhanced Header */}
               <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-6">
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 justify-center">
                     <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
                       <Eye className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold">Paper Reviews</h2>
-                      <p className="text-indigo-100 mt-1">
+                      <h2 className="text-2xl font-bold text center justify-center">Paper Reviews</h2>
+                      <p className="text-indigo-100 mt-1 text-xl justify-center">
                         Review details for: {selectedPaper?.Paper_Title}
                       </p>
                     </div>
@@ -1030,7 +1056,8 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                             <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl flex items-center justify-center text-sm font-bold">
                               {index + 1}
                             </div>
-                            Review {index + 1}
+                            Review {index + 1} 
+                            ({reviews.reviewer.firstName} {reviews.reviewer.lastName})
                           </h3>
                         </div>
 
