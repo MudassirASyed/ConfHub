@@ -2,7 +2,9 @@
 import axios from "axios";
 
 // Set your correct backend URL here
-const BASE_API_URL = "https://confhub-production-0226.up.railway.app/api/organizers";  // Replace with the correct URL
+
+const BASE_API_URL = "https://confhub-production-0226.up.railway.app/api/organizers";  
+
 
 // POST request to register an organizer
 export const registerOrganizer = async (data) => {

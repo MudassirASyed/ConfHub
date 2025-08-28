@@ -11,10 +11,12 @@ const ManageInvitations = () => {
   useEffect(() => {
     const fetchInvitationsData = async () => {
       try {
+
         const activeResponse = await axios.get('https://confhub-production-0226.up.railway.app/api/invitations/active');
         setActiveInvitations(activeResponse.data);
 
         const pendingResponse = await axios.get('https://confhub-production-0226.up.railway.app/api/invitations/pending');
+
         setPendingInvitations(pendingResponse.data);
 
         setLoading(false);
@@ -29,7 +31,9 @@ const ManageInvitations = () => {
 
   const handleApprove = async (invitationId) => {
     try {
+
       await axios.post(`https://confhub-production-0226.up.railway.app/api/invitations/approve/${invitationId}`);
+
       const updatedPending = pendingInvitations.filter(invite => invite.id !== invitationId);
       setPendingInvitations(updatedPending);
       alert('Invitation approved successfully!');

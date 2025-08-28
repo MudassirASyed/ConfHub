@@ -103,12 +103,12 @@ if (usertype?.Type === 'reviewer') {
                   </Link>
                 )}
                 
-                <Link
+                {/* <Link
                   to="/ManageReviewerRequests"
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
                   Manage Reviewer Requests
-                </Link>
+                </Link> */}
                 <Link
                   to="/Settings"
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-not-allowed"

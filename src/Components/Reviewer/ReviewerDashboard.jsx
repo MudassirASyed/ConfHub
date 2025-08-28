@@ -36,18 +36,22 @@ const username=storedUser.username
 
       try {
         const userResponse = await axios.get(
+
           `https://confhub-production-0226.up.railway.app/api/users/${userId}?populate=reviewerId`
+
         );
 
         const domain = userResponse.data?.reviewerId?.domain;
 
         const [ongoingRes, completedRes, assignedRes] = await Promise.all([
+
           axios.get("https://confhub-production-0226.up.railway.app/api/papers?populate=*"),
           axios.get(
             "https://confhub-production-0226.up.railway.app/api/papers?populate[review][populate]=reviewer&populate=conference"
           ),
           axios.get(
             `https://confhub-production-0226.up.railway.app/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
+
           ),
         ]);
 
@@ -230,12 +234,12 @@ const username=storedUser.username
                   Conference
                 </div>
               </th>
-              <th className="p-4 border-b font-semibold text-gray-700">
+              {/* <th className="p-4 border-b font-semibold text-gray-700">
                 <div className="flex items-center gap-2">
                   <FiAlertCircle className="text-green-600" />
                   Deadline
                 </div>
-              </th>
+              </th> */}
               <th className="p-4 border-b font-semibold text-gray-700">
                 <div className="flex items-center gap-2">
                   <FiCheckCircle className="text-green-600" />
@@ -265,9 +269,9 @@ const username=storedUser.username
                     {paper.conference?.Conference_title}
                   </span>
                 </td>
-                <td className="p-4 border-r text-gray-600 text-sm">
+                {/* <td className="p-4 border-r text-gray-600 text-sm">
                   {paper.conference?.Review_deadline}
-                </td>
+                </td> */}
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     <FiCheckCircle className="text-green-600" size={18} />

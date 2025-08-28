@@ -48,7 +48,9 @@ const [pageSize, setPageSize] = useState(10);
     const fetchConferences = async () => {
       try {
 
+
         const response = await axios.get('https://confhub-production-0226.up.railway.app/api/conferences', {
+
 
           params: {
             filters: {
@@ -197,7 +199,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                   Streamline Your
                 </span>
                 <br />
-                <span className="text-gray-800">Academic Events</span>
+                <span className="text-gray-800">Academicc Events</span>
               </h1>
               
               <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-lg">
@@ -243,7 +245,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
               <div className="relative bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-sky-100">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-gray-800">Active Conferences</h3>
+                    <h3 className="text-xl font-semibold text-gray-800"></h3>
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
                   <div className="space-y-3">

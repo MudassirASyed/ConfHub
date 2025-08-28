@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import Layout from './Layouts/Layout';
 import { createConference } from '../Services/conference-service';
-
+import { ArrowLeft } from "lucide-react";
 const CreateConference = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -203,12 +203,23 @@ const validateForm = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-              Create New Conference
-            </h1>
-            <p className="text-gray-600 text-lg">Set up your academic conference in just a few steps</p>
-          </div>
+         <div className="text-center mb-8">
+  <div className="flex items-center justify-center gap-3 mb-2">
+    <button
+      onClick={() => window.history.back()}
+      className="rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition mr-10"
+    >
+      <ArrowLeft className="h-7 w-7" />
+    </button>
+    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent ">
+      Create New Conference
+    </h1>
+  </div>
+  <p className="text-gray-600 text-lg">
+    Set up your academic conference in just a few steps
+  </p>
+</div>
+
 
           {/* Progress Steps */}
           <div className="flex items-center justify-center mb-8">
