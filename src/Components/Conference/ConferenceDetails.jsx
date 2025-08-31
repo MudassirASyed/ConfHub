@@ -15,7 +15,9 @@ const ConferenceDetails = () => {
     const fetchConferenceDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate=*`
+
+          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate=*`
+
         );
         setConference(response.data.data);
         setLoading(false);
