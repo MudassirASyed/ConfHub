@@ -50,7 +50,7 @@ import {
   FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
-    const STRAPI_BASE_URL = "http://localhost:1337"
+    const STRAPI_BASE_URL = "https://confhub-production-0226.up.railway.app"
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();

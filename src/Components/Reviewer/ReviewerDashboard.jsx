@@ -20,7 +20,7 @@ import {
 } from "react-icons/md";
 
 const ReviewerDashboard = () => {
-  const STRAPI_BASE_URL = "http://localhost:1337"
+  const STRAPI_BASE_URL = "https://confhub-production-0226.up.railway.app"
   const [ongoingPapers, setOngoingPapers] = useState([]);
   const [assignedPapers, setAssignedPapers] = useState([]);
   const [completedReviews, setCompletedReviews] = useState([]);
