@@ -197,7 +197,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                   Streamline Your
                 </span>
                 <br />
-                <span className="text-gray-800">Academicc Events</span>
+                <span className="text-gray-800">Academic Events</span>
               </h1>
               
               <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-lg">
@@ -271,22 +271,9 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
       <section className="py-20 bg-white/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-sky-100 to-pink-100 rounded-full px-4 py-2 text-sm font-medium text-sky-600 mb-4">
-              <FiCalendar className="w-4 h-4" />
-              <span>Active Conferences</span>
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              Discover <span className="bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent">Upcoming Events</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join leading conferences and contribute to the academic community with cutting-edge research and innovations.
-            </p>
-          </div>
-
 
           {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0 w-300">
             <div className="relative w-full sm:w-96">
               <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -344,15 +331,15 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
     </div>
 
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg ">
         <thead className="bg-gray-100">
           <tr>
            
             <th className="py-3 px-4 text-left">Conference Title</th>
             {/* <th className="py-3 px-4 text-left">Description</th> */}
-            <th className="py-3 px-4 text-left">Start Date</th>
-            <th className="py-3 px-4 text-left">Submission Deadline</th>
-            <th className="py-3 px-4 text-left">Review Deadline</th>
+            <th className="py-3 px-4 text-left">Conference Date</th>
+            <th className="py-3 px-4 text-left">Paper Submission Deadline</th>
+            <th className="py-3 px-4 text-left">Acceptance Notification</th>
             <th className="py-3 px-4 text-left">Status</th>
             <th className="py-3 px-4 text-left">Conference Topics</th>
             {/* <th className="py-3 px-4 text-left">Location</th> */}
@@ -370,7 +357,12 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                 {/* <td className="py-3 px-4">{conference.Description}</td> */}
                  <td className="py-3 px-4">{conference.Start_date}</td>
                 <td className="py-3 px-4">{conference.Submission_deadline}</td>
-                <td className="py-3 px-4">{conference.Review_deadline}</td>
+                <td className="py-3 px-4">
+  {conference.Review_deadline && conference.Review_deadline.trim() !== ""
+    ? conference.Review_deadline
+    : "Not announced yet"}
+</td>
+
                 <td className="py-3 px-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     conference.Status === "inProgress"
@@ -403,7 +395,18 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
         </tbody>
       </table>
     </div>
-
+ <div className="text-center mb-16 mt-30">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-sky-100 to-pink-100 rounded-full px-4 py-2 text-sm font-medium text-sky-600 mb-4 mt-20">
+              <FiCalendar className="w-4 h-4" />
+              <span>Active Conferences</span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Discover <span className="bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent">Upcoming Events</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Join leading conferences and contribute to the academic community with cutting-edge research and innovations.
+            </p>
+          </div>
     {/* Pagination Controls */}
     {totalPages > 1 && (
       <div className="flex justify-center items-center mt-6 space-x-2">

@@ -46,8 +46,11 @@ import {
   Activity,
   Zap
 } from "lucide-react";
+import { 
+  FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
+    const STRAPI_BASE_URL = "http://localhost:1337"
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -422,7 +425,23 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       </div>
     </div>
   );
-
+const handleDownload = async (fileUrl, fileName) => {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${fileUrl}`, {
+      method: "GET",
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName); // force download
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+};
   return (
     <>
       <Header />
@@ -802,30 +821,31 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     Paper ID: #{paper.id || "N/A"}
   </p>
 
-  {paper.file?.url && (
-    <a
-      href={paper.file.url}
-      download={paper.file.name}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 hover:bg-blue-800 text-white rounded-md transition"
-    >
-      <Download className="w-4 h-4" />
-      Download
-    </a>
-  )}
+                     {paper.file?.url && (
+  <button
+    onClick={() => handleDownload(paper.file.url, paper.file.name)}
+    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
+  >
+    <FiDownload size={16} />
+    Download
+  </button>
+)}
+
 </div>
-                  <h4
-                    className={`text-xl font-bold ${
-                      paper.finalDecisionByOrganizer === "Accept"
-                        ? "text-green-600"
-                        : paper.finalDecisionByOrganizer === "Reject"
-                        ? "text-red-600"
-                        : "text-gray-900"
-                    }`}
-                  >
-                    {paper.finalDecisionByOrganizer}
-                  </h4>
+                  {paper.finalDecisionByOrganizer && (
+  <h4
+    className={`text-xl font-bold ${
+      paper.finalDecisionByOrganizer === "Accept"
+        ? "text-green-600"
+        : paper.finalDecisionByOrganizer === "Reject"
+        ? "text-red-600"
+        : "text-gray-900"
+    }`}
+  >
+    {paper.finalDecisionByOrganizer}ed
+  </h4>
+)}
+
                 </div>
 
                 {/* Status Badges */}
@@ -874,35 +894,38 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap justify-center gap-3">
-                  <button
-                    onClick={() => handleAssignReviewers(paper.id)}
-                    className="inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    Assign Reviewer
-                  </button>
+               <div className="flex flex-wrap justify-center gap-3">
+  {/* Assign Reviewer Button */}
+  <button
+    onClick={() => handleAssignReviewers(paper.id)}
+    disabled={!!paper.finalDecisionByOrganizer} // disable if decision exists
+    className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
+      paper.finalDecisionByOrganizer
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105"
+    }`}
+  >
+    <UserPlus className="w-4 h-4" />
+    Assign Reviewer
+  </button>
 
-                  {paper.finalDecisionByOrganizer ? (
-                    <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border border-purple-200 cursor-pointer hover:from-purple-200 hover:to-pink-200 transition-all duration-200">
-                      <Award className="w-4 h-4" />
-                      <span className="font-medium" onClick={() => handleShowReviews(paper.id)}>Decision Submitted</span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleShowReviews(paper.id)}
-                      disabled={!paper.review || paper.review.length === 0}
-                      className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
-                        !paper.review || paper.review.length === 0
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 transform hover:scale-105"
-                      }`}
-                    >
-                      <Eye className="w-4 h-4" />
-                      View Reviews
-                    </button>
-                  )}
-                </div>
+  {/* View Reviews Button */}
+  <button
+    onClick={() => handleShowReviews(paper.id)}
+    disabled={!!paper.finalDecisionByOrganizer || !paper.review || paper.review.length === 0}
+    className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
+      paper.finalDecisionByOrganizer
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : !paper.review || paper.review.length === 0
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 transform hover:scale-105"
+    }`}
+  >
+    <Eye className="w-4 h-4" />
+    View Reviews
+  </button>
+</div>
+
               </div>
             ))}
           </div>

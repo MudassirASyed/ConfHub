@@ -109,11 +109,11 @@ const ConferenceDetails = () => {
                           </td>
                         </tr>
                         <tr className="bg-gray-50">
-                          <td className="px-6 py-4 font-semibold">Start Date</td>
+                          <td className="px-6 py-4 font-semibold">Conference Date</td>
                           <td className="px-6 py-4">{conf.Start_date}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-4 font-semibold">Submission Deadline</td>
+                          <td className="px-6 py-4 font-semibold">Paper Submission Deadline</td>
                           <td className="px-6 py-4">{conf.Submission_deadline}</td>
                         </tr>
                         {/* <tr className="bg-gray-50">

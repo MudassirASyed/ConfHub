@@ -177,7 +177,7 @@ const AuthorDashboard = () => {
             return !hasSubmittedByCurrentAuthor;
           });
 
-          setRecentConferences(filteredConferences);
+          setRecentConferences(allConferences);
           console.log("Filtered Recent Conferences", filteredConferences);
           console.log(
             "Filtered Approved Conferences:",
