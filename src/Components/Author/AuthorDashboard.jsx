@@ -159,7 +159,7 @@ const AuthorDashboard = () => {
             .join("&");
           const conferenceResponse = await axios.get(
 
-            `https://confhub-production-0226.up.railway.app/api/conferences?filters[requestStatus][$eq]=approved&[Status][$eq]=inProgress&${filters}&populate[Papers][populate]=submitted_by`
+            `https://confhub-production-0226.up.railway.app/api/conferences?filters[requestStatus][$eq]=approved&filters[Status][$eq]=inProgress&${filters}&populate[Papers][populate]=submitted_by`
 
           );
           console.log("recentt", conferenceResponse.data.data);
