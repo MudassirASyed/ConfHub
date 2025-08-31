@@ -397,18 +397,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
         </tbody>
       </table>
     </div>
- <div className="text-center mb-16 mt-30">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-sky-100 to-pink-100 rounded-full px-4 py-2 text-sm font-medium text-sky-600 mb-4 mt-20">
-              <FiCalendar className="w-4 h-4" />
-              <span>Active Conferences</span>
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              Discover <span className="bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent">Upcoming Events</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join leading conferences and contribute to the academic community with cutting-edge research and innovations.
-            </p>
-          </div>
+
     {/* Pagination Controls */}
     {totalPages > 1 && (
       <div className="flex justify-center items-center mt-6 space-x-2">
@@ -472,6 +461,18 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
   </>
 
 )}
+ <div className="text-center mb-16 mt-30">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-sky-100 to-pink-100 rounded-full px-4 py-2 text-sm font-medium text-sky-600 mb-4 mt-20">
+              <FiCalendar className="w-4 h-4" />
+              <span>Active Conferences</span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Discover <span className="bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent">Upcoming Events</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Join leading conferences and contribute to the academic community with cutting-edge research and innovations.
+            </p>
+          </div>
 
         </div>
       </section>
