@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const BASE_API_URL = "https://confhub-production-0226.up.railway.app/api/reviewers"; 
+const BASE_API_URL = "http://localhost:1337/api/reviewers"; 
 
 export const registerReviewer = async (data) => {
     try {

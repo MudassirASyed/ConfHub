@@ -67,7 +67,7 @@ const PaperSubmissionForm = () => {
   useEffect(() => {
     const fetchAuthorData = async () => {
       try {
-        const conferenceResponse = await axios.get(`https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}`);
+        const conferenceResponse = await axios.get(`http://localhost:1337/api/conferences?filters[id][$eq]=${id}`);
         setRecentConferences(conferenceResponse.data.data);
         setLoading(false);
       } catch (error) {
