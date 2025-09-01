@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from './Layouts/Layout';
 import axios from "axios";
+import { ArrowLeft } from "lucide-react";
 const PaperReviewPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ const PaperReviewPage = () => {
         console.log('paper id',id);
         
           const response = await axios.get(
+
   `http://localhost:1337/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
+
 ); 
         const data = response.data;
         setReviewData(data.data);
@@ -76,8 +79,14 @@ const PaperReviewPage = () => {
 
   return (
     <Layout>
-    <div className="p-6 max-w-7xl mx-auto bg-white rounded-lg shadow-md">
-      <h2 className="text-xl  mb-6 text-center">Paper Title: {reviewData[0]?.Paper_Title}</h2>
+    <div className="p-6 max-w-7xl mx-auto bg-white rounded-lg shadow-2xl shadow-black/40 drop-shadow-2xl">
+      <button
+      onClick={() => window.history.back()}
+      className="rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition mr-10"
+    >
+      <ArrowLeft className="h-7 w-7" />
+    </button>
+      <h2 className="text-2xl text-bold  mb-6 text-center">Paper Title: {reviewData[0]?.Paper_Title}</h2>
   
       <div className="space-y-6">
         <h3 className="text-xl mb-6 text-center">Conference: {reviewData[0]?.SubmittedTo?.Conference_title}</h3>
@@ -91,7 +100,7 @@ const PaperReviewPage = () => {
         {reviewData[0]?.review.map((reviews, index) => (
   <div
     key={index}
-    className={`mt-10 p-6 bg-white rounded-lg shadow-xl m-10 ${index !== 0 ? 'border-t-2 border-gray-500' : ''}`}
+    className={`mt-10 p-6 bg-white rounded-lg shadow-2xl shadow-black/40 drop-shadow-2xl m-10 ${index !== 0 ? 'border-t-2 border-gray-500' : ''}`}
   >
     <h3 className="text-lg font-semibold mb-4">Review {index + 1}</h3>
 

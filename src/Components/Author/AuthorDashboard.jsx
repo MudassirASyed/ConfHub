@@ -105,7 +105,9 @@ const AuthorDashboard = () => {
       try {
         try {
           const author = await axios.get(
+
             `http://localhost:1337/api/authors?filters[id][$eq]=${authorId}&populate=*`
+
           );
 
           // Get the first author object (since filters can return multiple)
@@ -156,7 +158,9 @@ const AuthorDashboard = () => {
             .map((id, index) => `filters[id][$in][${index}]=${id}`)
             .join("&");
           const conferenceResponse = await axios.get(
+
             `http://localhost:1337/api/conferences?filters[requestStatus][$eq]=approved&${filters}&populate[Papers][populate]=submitted_by`
+
           );
           console.log("recentt", conferenceResponse.data.data);
 
@@ -177,7 +181,7 @@ const AuthorDashboard = () => {
             return !hasSubmittedByCurrentAuthor;
           });
 
-          setRecentConferences(filteredConferences);
+          setRecentConferences(allConferences);
           console.log("Filtered Recent Conferences", filteredConferences);
           console.log(
             "Filtered Approved Conferences:",
@@ -185,7 +189,9 @@ const AuthorDashboard = () => {
           );
         }
         const papersResponse = await axios.get(
+
           `http://localhost:1337/api/papers?filters[submitted_by][id][$eq]=${authorId}&populate=*`
+
         );
         setSubmittedPapers(papersResponse.data?.data);
         setLoading(false);

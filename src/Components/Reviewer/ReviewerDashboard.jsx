@@ -20,6 +20,7 @@ import {
 } from "react-icons/md";
 
 const ReviewerDashboard = () => {
+  const STRAPI_BASE_URL = "http://localhost:1337"
   const [ongoingPapers, setOngoingPapers] = useState([]);
   const [assignedPapers, setAssignedPapers] = useState([]);
   const [completedReviews, setCompletedReviews] = useState([]);
@@ -36,24 +37,31 @@ const username=storedUser.username
 
       try {
         const userResponse = await axios.get(
+
           `http://localhost:1337/api/users/${userId}?populate=reviewerId`
+
         );
 
         const domain = userResponse.data?.reviewerId?.domain;
 
         const [ongoingRes, completedRes, assignedRes] = await Promise.all([
+
           axios.get("http://localhost:1337/api/papers?populate=*"),
+
           axios.get(
             "http://localhost:1337/api/papers?populate[review][populate]=reviewer&populate=conference"
           ),
           axios.get(
+
             `http://localhost:1337/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
+
           ),
         ]);
 
         const allPapers = ongoingRes.data?.data || [];
         const completedData = completedRes.data?.data || [];
         const assignedData = assignedRes.data?.data || [];
+console.log('a',assignedData);
 
         const completed = completedData.filter((paper) =>
           paper.review?.some((r) => r.reviewer?.id === reviewerId)
@@ -96,6 +104,23 @@ const username=storedUser.username
       console.error("Review request failed:", error);
     }
   };
+const handleDownload = async (fileUrl, fileName) => {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${fileUrl}`, {
+      method: "GET",
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName); // force download
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+};
 
   const renderAssigned = () =>
     assignedPapers.length ? (
@@ -170,18 +195,16 @@ const username=storedUser.username
                 </td>
                 <td className="p-4">
                   <div className="flex flex-col gap-2">
-                    {paper.file?.url && (
-                      <a
-                        href={paper.file.url}
-                        download={paper.file.name}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
-                      >
-                        <FiDownload size={16} />
-                        Download
-                      </a>
-                    )}
+                   {paper.file?.url && (
+  <button
+    onClick={() => handleDownload(paper.file.url, paper.file.name)}
+    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
+  >
+    <FiDownload size={16} />
+    Download
+  </button>
+)}
+
                     <button
                       onClick={() =>
                         (window.location.href = `/SubmitReview/${paper.id}`)
@@ -230,12 +253,12 @@ const username=storedUser.username
                   Conference
                 </div>
               </th>
-              <th className="p-4 border-b font-semibold text-gray-700">
+              {/* <th className="p-4 border-b font-semibold text-gray-700">
                 <div className="flex items-center gap-2">
                   <FiAlertCircle className="text-green-600" />
                   Deadline
                 </div>
-              </th>
+              </th> */}
               <th className="p-4 border-b font-semibold text-gray-700">
                 <div className="flex items-center gap-2">
                   <FiCheckCircle className="text-green-600" />
@@ -265,9 +288,9 @@ const username=storedUser.username
                     {paper.conference?.Conference_title}
                   </span>
                 </td>
-                <td className="p-4 border-r text-gray-600 text-sm">
+                {/* <td className="p-4 border-r text-gray-600 text-sm">
                   {paper.conference?.Review_deadline}
-                </td>
+                </td> */}
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     <FiCheckCircle className="text-green-600" size={18} />

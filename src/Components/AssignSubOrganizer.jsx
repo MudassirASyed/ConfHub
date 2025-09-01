@@ -12,8 +12,10 @@ const AssignSubOrganizer = ({ conferenceId, onClose }) => {
         const fetchUsers = async () => {
             try {
                 const [authorsResponse, reviewersResponse] = await Promise.all([
+
                     axios.get('http://localhost:1337/api/authors'),
                     axios.get('http://localhost:1337/api/reviewers')
+
                 ]);
 
                 const fetchedAuthors = authorsResponse.data.data.map(item => ({

@@ -6,6 +6,8 @@ import "./ConferenceDetails.css";
 import Header from "../Layouts/Header";
 import Footer from "./Footer";
 import axios from "axios";
+import { Download } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -44,8 +46,11 @@ import {
   Activity,
   Zap
 } from "lucide-react";
+import { 
+  FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
+    const STRAPI_BASE_URL = "http://localhost:1337"
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -115,7 +120,9 @@ const [activeTab, setActiveTab] = useState('remaining');
   useEffect(() => {
     const fetchReviewers = async () => {
       try {
+
         const response = await axios.get(`http://localhost:1337/api/reviewers`);
+
         const reviewerData = response.data.data.map((r) => ({
           id: r.id,
           name: r.firstName + r.lastName,
@@ -150,7 +157,13 @@ const [activeTab, setActiveTab] = useState('remaining');
     const fetchConferenceDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate]=*&populate[Organizer][populate]=*`
+
+
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}}&populate[Papers][populate][file][populate]=*
+&populate[Papers][populate][review][populate]=reviewer
+&populate[Organizer][populate]=*`
+
+
         );
         confData = response.data.data;
         setConference(confData);
@@ -213,7 +226,10 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       console.log("payy", payload);
 
       const response = await axios.post(
+
         "http://localhost:1337/api/organizers/final-decision",
+
+
         payload
       );
 
@@ -256,7 +272,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     try {
       const response = await axios.post(
+
         "http://localhost:1337/api/conferences/updateReviewDeadline",
+
         payload
       );
 
@@ -281,7 +299,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     try {
       const response = await axios.post(
+
         "http://localhost:1337/api/conferences/updateConferenceStatus",
+
         payload
       );
 
@@ -332,7 +352,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       // Replace with your actual API endpoint
       const response = await axios.post(
+
         "http://localhost:1337/api/organizers/updateReviewFormFields",
+
         payload
       );
 
@@ -380,7 +402,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     console.log("Payload to send:", payload);
 
     axios
+
       .post("http://localhost:1337/api/organizers/assign-reviewers", payload)
+
       .then((res) => {
         console.log("Reviewers assigned successfully", res.data);
         setSelectedExistingReviewers([]);
@@ -418,12 +442,28 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       </div>
     </div>
   );
-
+const handleDownload = async (fileUrl, fileName) => {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${fileUrl}`, {
+      method: "GET",
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName); // force download
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+};
   return (
     <>
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <section className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 shadow-2xl shadow-black/40 drop-shadow-2xl">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -436,8 +476,14 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                   {conference.map((conf) => (
                     <div key={conf.id} className="space-y-8">
                       <div className="flex justify-between items-start">
+                        <button
+    onClick={() => window.history.back()}
+    className="rounded-full p-2 bg-blue-500 hover:bg-blue-700 text-white transition"
+  >
+    <ArrowLeft className="h-7 w-7" />
+  </button>
                         <div className="flex-1">
-                          <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                          <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-center">
                             {conf.Conference_title}
                           </h1>
                           <p className="mt-2 text-lg text-gray-600 leading-relaxed">
@@ -450,7 +496,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                             {conf.Status}
                           </span>
                         </div>
-                       {conf.Status !== "completed" && (
+                     {conf.Status !== "completed" && new Date(conf.Start_date) < new Date() && (
   <button
     onClick={updateConferenceStatus}
     disabled={isUpdating}
@@ -462,6 +508,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     {isUpdating ? "Updating…" : "Mark as Completed"}
   </button>
 )}
+
 
 
 
@@ -770,7 +817,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       return filteredPapers.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 shadow-2xl shadow-black/40 drop-shadow-2xl">
             {paginatedPapers.map((paper) => (
               <div
                 key={paper.id}
@@ -786,20 +833,36 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                       {paper.Paper_Title}
                     </h4>
                   </div>
-                  <p className="text-sm text-gray-500 font-medium">
-                    Paper ID: #{paper.id || "N/A"}
-                  </p>
-                  <h4
-                    className={`text-xl font-bold ${
-                      paper.finalDecisionByOrganizer === "Accept"
-                        ? "text-green-600"
-                        : paper.finalDecisionByOrganizer === "Reject"
-                        ? "text-red-600"
-                        : "text-gray-900"
-                    }`}
-                  >
-                    {paper.finalDecisionByOrganizer}
-                  </h4>
+                <div className="flex items-center justify-center gap-3 mt-2">
+  <p className="text-lg text-black-500 font-medium pt-5">
+    Paper ID: #{paper.id || "N/A"}
+  </p>
+
+                     {paper.file?.url && (
+  <button
+    onClick={() => handleDownload(paper.file.url, paper.file.name)}
+    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
+  >
+    <FiDownload size={16} />
+    Download
+  </button>
+)}
+
+</div>
+                  {paper.finalDecisionByOrganizer && (
+  <h4
+    className={`text-xl font-bold ${
+      paper.finalDecisionByOrganizer === "Accept"
+        ? "text-green-600"
+        : paper.finalDecisionByOrganizer === "Reject"
+        ? "text-red-600"
+        : "text-gray-900"
+    }`}
+  >
+    {paper.finalDecisionByOrganizer}ed
+  </h4>
+)}
+
                 </div>
 
                 {/* Status Badges */}
@@ -848,35 +911,38 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap justify-center gap-3">
-                  <button
-                    onClick={() => handleAssignReviewers(paper.id)}
-                    className="inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    Assign Reviewer
-                  </button>
+               <div className="flex flex-wrap justify-center gap-3">
+  {/* Assign Reviewer Button */}
+  <button
+    onClick={() => handleAssignReviewers(paper.id)}
+    disabled={!!paper.finalDecisionByOrganizer} // disable if decision exists
+    className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
+      paper.finalDecisionByOrganizer
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105"
+    }`}
+  >
+    <UserPlus className="w-4 h-4" />
+    Assign Reviewer
+  </button>
 
-                  {paper.finalDecisionByOrganizer ? (
-                    <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border border-purple-200 cursor-pointer hover:from-purple-200 hover:to-pink-200 transition-all duration-200">
-                      <Award className="w-4 h-4" />
-                      <span className="font-medium" onClick={() => handleShowReviews(paper.id)}>Decision Submitted</span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleShowReviews(paper.id)}
-                      disabled={!paper.review || paper.review.length === 0}
-                      className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
-                        !paper.review || paper.review.length === 0
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 transform hover:scale-105"
-                      }`}
-                    >
-                      <Eye className="w-4 h-4" />
-                      View Reviews
-                    </button>
-                  )}
-                </div>
+  {/* View Reviews Button */}
+  <button
+    onClick={() => handleShowReviews(paper.id)}
+    disabled={!!paper.finalDecisionByOrganizer || !paper.review || paper.review.length === 0}
+    className={`inline-flex items-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg transition-all duration-200 ${
+      paper.finalDecisionByOrganizer
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : !paper.review || paper.review.length === 0
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 transform hover:scale-105"
+    }`}
+  >
+    <Eye className="w-4 h-4" />
+    View Reviews
+  </button>
+</div>
+
               </div>
             ))}
           </div>
@@ -996,13 +1062,13 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
               {/* Enhanced Header */}
               <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-6">
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 justify-center">
                     <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
                       <Eye className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold">Paper Reviews</h2>
-                      <p className="text-indigo-100 mt-1">
+                      <h2 className="text-2xl font-bold text center justify-center">Paper Reviews</h2>
+                      <p className="text-indigo-100 mt-1 text-xl justify-center">
                         Review details for: {selectedPaper?.Paper_Title}
                       </p>
                     </div>
@@ -1030,7 +1096,8 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                             <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl flex items-center justify-center text-sm font-bold">
                               {index + 1}
                             </div>
-                            Review {index + 1}
+                            Review {index + 1} 
+                            ({reviews.reviewer.firstName} {reviews.reviewer.lastName})
                           </h3>
                         </div>
 
@@ -1272,7 +1339,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
                           Submission_deadline: newDeadline,
                         };
                         const response = await axios.post(
+
                           "http://localhost:1337/api/conferences/updateSubmissiondate",
+
                           payload
                         );
 

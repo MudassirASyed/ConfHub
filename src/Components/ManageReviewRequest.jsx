@@ -12,7 +12,9 @@ const ManageReviewerRequests = () => {
   useEffect(() => {
     const fetchPapers = async () => {
       try {
+
         const response = await fetch("http://localhost:1337/api/papers?populate=*");
+
         const data = await response.json();
         const filtered = data.data.filter(
           (paper) => paper.reviewRequests && paper.reviewRequests.length > 0
