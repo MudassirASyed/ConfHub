@@ -16,7 +16,7 @@ const PaperReviewPage = () => {
         
           const response = await axios.get(
 
-  `https://confhub-production-0226.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
+  `http://localhost:1337/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
 
 ); 
         const data = response.data;

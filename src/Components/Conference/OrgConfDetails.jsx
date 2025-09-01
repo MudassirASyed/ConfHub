@@ -121,7 +121,7 @@ const [activeTab, setActiveTab] = useState('remaining');
     const fetchReviewers = async () => {
       try {
 
-        const response = await axios.get(`https://confhub-production-0226.up.railway.app/api/reviewers`);
+        const response = await axios.get(`http://localhost:1337/api/reviewers`);
 
         const reviewerData = response.data.data.map((r) => ({
           id: r.id,
@@ -158,9 +158,11 @@ const [activeTab, setActiveTab] = useState('remaining');
       try {
         const response = await axios.get(
 
-          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}}&populate[Papers][populate][file][populate]=*
+
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer
 &populate[Organizer][populate]=*`
+
 
         );
         confData = response.data.data;
@@ -225,7 +227,8 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/organizers/final-decision",
+        "http://localhost:1337/api/organizers/final-decision",
+
 
         payload
       );
@@ -270,7 +273,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/conferences/updateReviewDeadline",
+        "http://localhost:1337/api/conferences/updateReviewDeadline",
 
         payload
       );
@@ -297,7 +300,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/conferences/updateConferenceStatus",
+        "http://localhost:1337/api/conferences/updateConferenceStatus",
 
         payload
       );
@@ -350,7 +353,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       // Replace with your actual API endpoint
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/organizers/updateReviewFormFields",
+        "http://localhost:1337/api/organizers/updateReviewFormFields",
 
         payload
       );
@@ -400,7 +403,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     axios
 
-      .post("https://confhub-production-0226.up.railway.app/api/organizers/assign-reviewers", payload)
+      .post("http://localhost:1337/api/organizers/assign-reviewers", payload)
 
       .then((res) => {
         console.log("Reviewers assigned successfully", res.data);
@@ -1337,7 +1340,7 @@ const handleDownload = async (fileUrl, fileName) => {
                         };
                         const response = await axios.post(
 
-                          "https://confhub-production-0226.up.railway.app/api/conferences/updateSubmissiondate",
+                          "http://localhost:1337/api/conferences/updateSubmissiondate",
 
                           payload
                         );
