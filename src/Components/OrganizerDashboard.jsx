@@ -63,6 +63,7 @@ const OrganizerDashboard = () => {
                 const response = await axios.get(`http://localhost:1337/api/conferences?filters[requestStatus][$eq]=approved&filters[Organizer][$eq]=${organizerId}&populate=*`);
 
 
+
                 setConferences(response.data.data);
                 
             } catch (error) {

@@ -52,6 +52,7 @@ const [pageSize, setPageSize] = useState(10);
         const response = await axios.get('http://localhost:1337/api/conferences', {
 
 
+
           params: {
             filters: {
               requestStatus: {

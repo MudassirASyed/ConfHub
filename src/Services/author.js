@@ -5,6 +5,7 @@ import axios from "axios";
 const BASE_API_URL = "http://localhost:1337/api/author"; 
 
 
+
 export const registerAuthor = async (data) => {
     try {
       console.log('datta',data);

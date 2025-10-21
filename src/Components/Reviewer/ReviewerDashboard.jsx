@@ -47,10 +47,12 @@ const username=storedUser.username
         const [ongoingRes, completedRes, assignedRes] = await Promise.all([
 
           axios.get("http://localhost:1337/api/papers?populate=*"),
+
           axios.get(
             "http://localhost:1337/api/papers?populate[review][populate]=reviewer&populate=conference"
           ),
           axios.get(
+
             `http://localhost:1337/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
 
           ),
