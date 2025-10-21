@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_API_URL = 'https://confhub-production-0226.up.railway.app/api/conference'; 
+const BASE_API_URL = 'http://localhost:1337/api/conference'; 
 
 export const createConference = async (data) => {
     try {

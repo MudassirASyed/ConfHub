@@ -458,6 +458,10 @@ export interface ApiConferenceConference extends Struct.CollectionTypeSchema {
       ['pending', 'approved', 'rejected']
     >;
     Review_deadline: Schema.Attribute.Date;
+    reviewer_invitations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reviewer-invitation.reviewer-invitation'
+    >;
     reviewFormFields: Schema.Attribute.JSON;
     Session_title: Schema.Attribute.String;
     Speaker_names: Schema.Attribute.String;
@@ -611,6 +615,44 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiReviewerInvitationReviewerInvitation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'reviewer_invitations';
+  info: {
+    displayName: 'ReviewerInvitation';
+    pluralName: 'reviewer-invitations';
+    singularName: 'reviewer-invitation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    conference: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::conference.conference'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    InvitationStatus: Schema.Attribute.Enumeration<
+      ['pending', 'accepted', 'rejected']
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reviewer-invitation.reviewer-invitation'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    reviewer: Schema.Attribute.Relation<'manyToOne', 'api::reviewer.reviewer'>;
+    reviewerEmail: Schema.Attribute.Email;
+    token: Schema.Attribute.UID;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReviewerReviewer extends Struct.CollectionTypeSchema {
   collectionName: 'reviewers';
   info: {
@@ -641,6 +683,10 @@ export interface ApiReviewerReviewer extends Struct.CollectionTypeSchema {
     password: Schema.Attribute.Password;
     publishedAt: Schema.Attribute.DateTime;
     review: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    reviewer_invitations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reviewer-invitation.reviewer-invitation'
+    >;
     subDomain: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1176,6 +1222,7 @@ declare module '@strapi/strapi' {
       'api::organizer.organizer': ApiOrganizerOrganizer;
       'api::paper.paper': ApiPaperPaper;
       'api::review.review': ApiReviewReview;
+      'api::reviewer-invitation.reviewer-invitation': ApiReviewerInvitationReviewerInvitation;
       'api::reviewer.reviewer': ApiReviewerReviewer;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

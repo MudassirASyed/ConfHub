@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reviewer_invitations",
+  "info": {
+    "singularName": "reviewer-invitation",
+    "pluralName": "reviewer-invitations",
+    "displayName": "ReviewerInvitation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "conference": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::conference.conference",
+      "inversedBy": "reviewer_invitations"
+    },
+    "reviewer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::reviewer.reviewer",
+      "inversedBy": "reviewer_invitations"
+    },
+    "InvitationStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ]
+    },
+    "token": {
+      "type": "uid"
+    },
+    "reviewerEmail": {
+      "type": "email"
+    }
+  }
+}

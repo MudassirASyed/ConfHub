@@ -28,6 +28,7 @@ import {
   Star, 
   Award,
   Clock,
+  Check,
   Edit3,
   Save,
   Plus,
@@ -105,6 +106,15 @@ const [activeTab, setActiveTab] = useState('remaining');
   const [sortOption, setSortOption] = useState("reviews");
   const [selectedExistingReviewer, setSelectedExistingReviewer] = useState("");
   const [newReviewerEmail, setNewReviewerEmail] = useState("");
+const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+const [currentConfId, setCurrentConfId] = useState(null);
+
+//for view invitedd reviewers
+const [open, setOpen] = useState(false);
+  
+  const [invitations, setInvitations] = useState([]);
+
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [existingReviewers, setExistingReviewers] = useState([
     // Replace with dynamic data if needed
@@ -116,19 +126,21 @@ const [activeTab, setActiveTab] = useState('remaining');
   );const [statusDropdowns, setStatusDropdowns] = useState({});
 
   const [reviewers, setReviewers] = useState([]);
-
+  const [InviteReviewers, setInviteReviewers] = useState([]);
+const[inviteR,setInviteR]= useState([]);
+  const [InvitedReviewers, setInvitedReviewers] = useState([]);
   useEffect(() => {
     const fetchReviewers = async () => {
       try {
 
-        const response = await axios.get(`https://confhub-production-0226.up.railway.app/api/reviewers`);
+        const response = await axios.get(`http://localhost:1337/api/reviewers`);
 
         const reviewerData = response.data.data.map((r) => ({
           id: r.id,
           name: r.firstName + r.lastName,
           email: r.email,
         }));
-        setReviewers(reviewerData);
+        setInviteReviewers(reviewerData);
       } catch (error) {
         console.error("Error fetching reviewers:", error);
       }
@@ -138,17 +150,13 @@ const [activeTab, setActiveTab] = useState('remaining');
   }, []);
   // Extract IDs of already assigned reviewers
 
-  const reviewerOptions = reviewers.map((reviewer) => ({
-    value: reviewer.id,
-    label: `${reviewer.name} (${reviewer.email})`,
-  }));
+ 
   const assignedReviewerIds =
     assignPaper?.reviewRequestsConfirmed?.map((r) => r.id) || [];
 
   // Filter out already assigned reviewers from options
-  const filteredReviewerOptions = reviewerOptions.filter(
-    (option) => !assignedReviewerIds.includes(option.value)
-  );
+  
+
   const handleReviewerChange = (selectedOptions) => {
     setSelectedExistingReviewers(selectedOptions || []);
   };
@@ -158,15 +166,42 @@ const [activeTab, setActiveTab] = useState('remaining');
       try {
         const response = await axios.get(
 
-          `https://confhub-production-0226.up.railway.app/api/conferences?filters[id][$eq]=${id}}&populate[Papers][populate][file][populate]=*
-&populate[Papers][populate][review][populate]=reviewer
-&populate[Organizer][populate]=*`
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
+&populate[Papers][populate][review][populate]=reviewer&populate[Papers][populate][reviewRequestsConfirmed][populate]=*&
+&populate[Organizer][populate]=*&populate[reviewer_invitations][populate]=*`
 
         );
         confData = response.data.data;
         setConference(confData);
         setLoading(false);
         console.log("ddd", confData);
+
+//for invited reviewer acccepted to display in assign modal
+const reviewerData = response.data.data
+  .flatMap((conference) =>
+    (conference.reviewer_invitations || [])
+      .filter((inv) => inv.InvitationStatus === "accepted" && inv.reviewer)
+      .map((inv) => ({
+        id: inv.reviewer.id,
+        name: `${inv.reviewer.firstName || ""} ${inv.reviewer.lastName || ""}`.trim(),
+        email: inv.reviewerEmail || inv.reviewer.email,
+      }))
+  );
+  setReviewers(reviewerData);
+const invitedReviewers = response.data.data
+  .flatMap((conference) =>
+    (conference.reviewer_invitations || [])
+      .filter((inv) => inv.reviewer) // ✅ only keep those with a valid reviewer
+      .map((inv) => ({
+        id: inv.reviewer.id,
+        name: `${inv.reviewer.firstName || ""} ${inv.reviewer.lastName || ""}`.trim(),
+        email: inv.reviewerEmail || inv.reviewer.email,
+      }))
+  );
+
+setInvitedReviewers(invitedReviewers);
+
+  
 
         if (confData.length > 0) {
           const papers = confData[0].Papers || []; // No `.data` here
@@ -192,7 +227,26 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     fetchConferenceDetails();
   }, [id]);
+   const reviewerOptions = reviewers.map((reviewer) => ({
+    value: reviewer.id,
+    label: `${reviewer.name} (${reviewer.email})`,
+  }));
+ const filteredReviewerOptions = reviewerOptions.filter(
+    (option) => !assignedReviewerIds.includes(option.value)
+  );
 
+
+  //for invite modal
+   const inviteReviewerOptions = InviteReviewers.map((reviewer) => ({
+    value: reviewer.id,
+    label: `${reviewer.name} (${reviewer.email})`,
+  }));
+const filteredInviteReviewerOptions = inviteReviewerOptions.filter(
+  (reviewer) => !InvitedReviewers.some(
+    (invited) => invited.id === reviewer.id
+  )
+);
+  
   const handleShowReviews = (paperId) => {
     const paper = submittedPapers.find((p) => p.id === paperId);
     console.log("rr", paper.review);
@@ -225,7 +279,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/organizers/final-decision",
+        "http://localhost:1337/api/organizers/final-decision",
 
         payload
       );
@@ -270,7 +324,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/conferences/updateReviewDeadline",
+        "http://localhost:1337/api/conferences/updateReviewDeadline",
 
         payload
       );
@@ -297,7 +351,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/conferences/updateConferenceStatus",
+        "http://localhost:1337/api/conferences/updateConferenceStatus",
 
         payload
       );
@@ -350,7 +404,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       // Replace with your actual API endpoint
       const response = await axios.post(
 
-        "https://confhub-production-0226.up.railway.app/api/organizers/updateReviewFormFields",
+        "http://localhost:1337/api/organizers/updateReviewFormFields",
 
         payload
       );
@@ -378,14 +432,80 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
   const handleAssignReviewers = (paperId) => {
     const paper = submittedPapers.find((p) => p.id === paperId);
     if (paper) {
+      console.log('as pap',paper);
+      
       setAssignPaper(paper);
       setIsAssignModalOpen(true); // Open the new modal
     }
   };
+  
+  const handleInviteReviewers = (confId) => {
+  setCurrentConfId(confId);
+  console.log('cc',confId);
+  
+  setIsInviteModalOpen(true);
+};
+const handleConfirmInvite = async (confId) => {
+  try {
+    if (selectedExistingReviewers.length === 0 && newReviewerEmails.length === 0) {
+      alert("Please select at least one reviewer or enter at least one email.");
+      return;
+    }
+    const payload = {
+      conference: confId,
+      existingReviewerIds: selectedExistingReviewers.map(r => r.value),
+      newReviewerEmails,
+    };
+console.log('pp',payload);
+
+    // axios
+
+     axios.post("http://localhost:1337/api/organizers/invite-reviewers", payload)
+      .then((res) => {
+        console.log("Reviewers assigned successfully", res.data);
+        setSelectedExistingReviewers([]);
+        setNewReviewerEmails([]);
+        setNewReviewerInput("");
+        setAssignPaper(null);
+        setIsAssignModalOpen(false);
+      })
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to send invitations");
+  }
+};
+
+
+const handleViewInvitedReviewers = async (confId) => {
+    try {
+      setLoading(true);
+      setOpen(true);
+
+  const res = await axios.get(
+  `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate=reviewer_invitations`
+);
+console.log('invv',res.data.data);
+
+      const list = res.data?.data[0]?.reviewer_invitations || [];
+      setInvitations(list);
+    } catch (err) {
+      console.error("Error fetching reviewers:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const grouped = {
+    pending: invitations.filter(
+      (i) => i.InvitationStatus === null || i.InvitationStatus === 'pending'
+    ),
+    accepted: invitations.filter((i) => i.InvitationStatus === 'accepted'),
+    rejected: invitations.filter((i) => i.InvitationStatus === 'rejected'),
+  };
   const handleConfirmAssign = () => {
     const selectedReviewerIds = selectedExistingReviewers.map((r) => r.value);
 
-    if (selectedReviewerIds.length === 0 && newReviewerEmails.length === 0) {
+    if (selectedReviewerIds.length === 0 ) {
       alert("Please select at least one reviewer or enter at least one email.");
       return;
     }
@@ -393,14 +513,14 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     const payload = {
       paperId: assignPaper.id,
       reviewers: selectedReviewerIds,
-      newReviewerEmails: newReviewerEmails,
+     //newReviewerEmails: newReviewerEmails,
     };
 
     console.log("Payload to send:", payload);
 
     axios
 
-      .post("https://confhub-production-0226.up.railway.app/api/organizers/assign-reviewers", payload)
+      .post("http://localhost:1337/api/organizers/assign-reviewers", payload)
 
       .then((res) => {
         console.log("Reviewers assigned successfully", res.data);
@@ -456,6 +576,38 @@ const handleDownload = async (fileUrl, fileName) => {
     console.error("Download failed:", error);
   }
 };
+
+
+  const StatusCard = ({ title, icon: Icon, items, bgColor, borderColor, textColor }) => (
+    <div className={`${bgColor} rounded-xl border ${borderColor} p-4 flex flex-col h-full`}>
+      <div className={`flex items-center gap-2 mb-4 ${textColor} font-semibold text-sm`}>
+        <Icon className="w-4 h-4" />
+        {title} ({items.length})
+      </div>
+      <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+        {items.length === 0 ? (
+          <p className="text-gray-400 text-xs text-center py-4">No reviewers</p>
+        ) : (
+          items.map((inv) => (
+            <div
+              key={inv.id}
+              className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start gap-2">
+                <Mail className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-700 break-all font-medium">
+                    {inv.reviewerEmail || 'No email'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Header />
@@ -623,7 +775,38 @@ const handleDownload = async (fileUrl, fileName) => {
                           )}
                         </div>
                       </div>
+<div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl border border-orange-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                                <Clock className="w-6 h-6 text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                                Invite Reviewers for this conference
+                                </h3>
+                                
+                              </div>
+                            </div>
+                             
+                          <button
+  onClick={() => handleInviteReviewers(conf.id)}
+  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-orange-700 hover:text-orange-800 bg-white hover:bg-orange-50 border border-orange-200 rounded-lg transition-all duration-200"
+>
+  <Edit3 className="w-4 h-4" />
+  Invite Reviewers
+</button>
+  <button
+  onClick={() => handleViewInvitedReviewers(conf.id)}
+  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-700 hover:text-green-800 bg-white hover:bg-orange-50 border border-orange-200 rounded-lg transition-all duration-200"
+>
+ <Eye className="w-4 h-4" />
+ Already Invited Reviewers
+</button>
 
+                            
+                          </div>
+                        </div>
                       {/* Review Form Configuration */}
                        {conf.Status !== "completed" && (
                       <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 p-6 rounded-xl border border-purple-200">
@@ -1337,7 +1520,7 @@ const handleDownload = async (fileUrl, fileName) => {
                         };
                         const response = await axios.post(
 
-                          "https://confhub-production-0226.up.railway.app/api/conferences/updateSubmissiondate",
+                          "http://localhost:1337/api/conferences/updateSubmissiondate",
 
                           payload
                         );
@@ -1398,6 +1581,7 @@ const handleDownload = async (fileUrl, fileName) => {
                   >
                     <X className="w-5 h-5" />
                   </button>
+                  
                 </div>
               </div>
 
@@ -1549,7 +1733,7 @@ const handleDownload = async (fileUrl, fileName) => {
         )}
 
         {/* Enhanced Assign Reviewer Modal */}
-        {isAssignModalOpen && (
+         {isAssignModalOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-gray-200">
       {/* Header - Fixed */}
@@ -1654,7 +1838,7 @@ const handleDownload = async (fileUrl, fileName) => {
           </div>
 
           {/* Add New Reviewer */}
-          <div>
+          {/* <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
               <Mail className="w-4 h-4" />
               Add New Reviewer (Email)
@@ -1682,10 +1866,10 @@ const handleDownload = async (fileUrl, fileName) => {
             <p className="text-xs text-gray-500 mt-2">
               Press Enter or comma after each email to add it
             </p>
-          </div>
+          </div> */}
 
           {/* New Reviewer Email Tags */}
-          {newReviewerEmails.length > 0 && (
+          {/* {newReviewerEmails.length > 0 && (
             <div>
               <label className="text-sm font-semibold text-gray-700 mb-2 block">
                 New Reviewers to Add:
@@ -1713,7 +1897,7 @@ const handleDownload = async (fileUrl, fileName) => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -1739,6 +1923,199 @@ const handleDownload = async (fileUrl, fileName) => {
     </div>
   </div>
 )}
+
+
+{isInviteModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-gray-200">
+
+      {/* Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 flex-shrink-0 rounded-3xl">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+              <UserPlus className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Invite Reviewers</h2>
+              {/* <p className="text-orange-100 text-sm">
+                Conference: {conf.Conference_Title}
+              </p> */}
+            </div>
+          </div>
+          <button
+            onClick={() => setIsInviteModalOpen(false)}
+            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        {/* Existing Reviewers */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Users className="w-4 h-4" />
+            Select Existing Reviewers
+          </label>
+          <Select
+            isMulti
+            options={filteredInviteReviewerOptions}
+            value={selectedExistingReviewers}
+            onChange={handleReviewerChange}
+            className="text-sm"
+            classNamePrefix="react-select"
+            placeholder="Choose reviewers from database..."
+          />
+        </div>
+
+        {/* Add New Reviewer */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Mail className="w-4 h-4" />
+            Add New Reviewer (Email)
+          </label>
+          <input
+            type="email"
+            value={newReviewerInput}
+            onChange={(e) => setNewReviewerInput(e.target.value)}
+            onKeyDown={(e) => {
+              if ((e.key === "Enter" || e.key === ",") && newReviewerInput.trim()) {
+                e.preventDefault();
+                setNewReviewerEmails((prev) => [...prev, newReviewerInput.trim()]);
+                setNewReviewerInput("");
+              }
+            }}
+            placeholder="Type email and press Enter or comma"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            Press Enter or comma after each email to add it
+          </p>
+        </div>
+
+        {/* New Reviewer Email Tags */}
+        {newReviewerEmails.length > 0 && (
+          <div>
+            <label className="text-sm font-semibold text-gray-700 mb-2 block">
+              New Reviewers to Invite:
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {newReviewerEmails.map((email, index) => (
+                <span
+                  key={index}
+                  className="flex items-center gap-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 px-3 py-2 rounded-lg border border-orange-200 text-sm font-medium"
+                >
+                  <Mail className="w-3 h-3" />
+                  {email}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setNewReviewerEmails((prev) => prev.filter((_, i) => i !== index))
+                    }
+                    className="text-red-500 hover:text-red-700 ml-1"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="p-6 border-t border-gray-200 flex gap-3">
+        <button
+          onClick={() => setIsInviteModalOpen(false)}
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <X className="w-4 h-4" />
+          Cancel
+        </button>
+        <button
+          onClick={() => handleConfirmInvite(currentConfId)}
+          className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 transform hover:scale-105"
+        >
+          <UserPlus className="w-4 h-4" />
+          Send Invitations
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Modal */}
+     {open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[80vh]">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-gray-200 px-6 py-5 flex-shrink-0">
+              <h2 className="text-xl font-bold text-gray-900">Already Invited Reviewers</h2>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              ) : invitations.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-500 text-center">No invitations found.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                  <StatusCard
+                    title="Pending"
+                    icon={Clock}
+                    items={grouped.pending}
+                    bgColor="bg-yellow-50"
+                    borderColor="border-yellow-200"
+                    textColor="text-yellow-700"
+                  />
+                  <StatusCard
+                    title="Accepted"
+                    icon={CheckCircle}
+                    items={grouped.accepted}
+                    bgColor="bg-green-50"
+                    borderColor="border-green-200"
+                    textColor="text-green-700"
+                  />
+                  <StatusCard
+                    title="Rejected"
+                    icon={XCircle}
+                    items={grouped.rejected}
+                    bgColor="bg-red-50"
+                    borderColor="border-red-200"
+                    textColor="text-red-700"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Footer stats */}
+            {invitations.length > 0 && !loading && (
+              <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-2xl flex-shrink-0">
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>Total Invitations: <span className="font-semibold text-gray-900">{invitations.length}</span></span>
+                  <span>Responded: <span className="font-semibold text-gray-900">{grouped.accepted.length + grouped.rejected.length}</span></span>
+                  <span>Response Rate: <span className="font-semibold text-gray-900">{Math.round(((grouped.accepted.length + grouped.rejected.length) / invitations.length) * 100)}%</span></span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    
       </div>
       <Footer />
     </>

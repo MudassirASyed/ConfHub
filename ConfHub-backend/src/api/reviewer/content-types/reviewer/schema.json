@@ -41,13 +41,18 @@
     "AssignedPapers": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::paper.paper",
-      "required": false
+      "target": "api::paper.paper"
     },
     "review": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::review.review",
+      "mappedBy": "reviewer"
+    },
+    "reviewer_invitations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reviewer-invitation.reviewer-invitation",
       "mappedBy": "reviewer"
     }
   }

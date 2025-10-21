@@ -1,6 +1,7 @@
 import { factories } from '@strapi/strapi';
 const sendEmail = require('../../email/email');
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const otpStore = {};
 export default factories.createCoreController('api::organizer.organizer', ({ strapi }) => ({
@@ -870,6 +871,173 @@ The Organizing Committee`;
   } catch (error) {
     console.error('Assignment error:', error);
     return ctx.internalServerError('Failed to assign reviewers.');
+  }
+},
+async inviteReviewersToConf(ctx) {
+  const { conference, existingReviewerIds = [], newReviewerEmails = [] } = ctx.request.body;
+
+  console.log("Request Body:", ctx.request.body);
+
+  if (!conference || (existingReviewerIds.length === 0 && newReviewerEmails.length === 0)) {
+    return ctx.badRequest("Conference ID and at least one reviewer or email are required.");
+  }
+
+  try {
+    // 🟡 Get conference details
+    const conf = await strapi.entityService.findOne("api::conference.conference", conference, {
+      fields: ["id", "Conference_title"],
+    });
+
+    if (!conf) return ctx.notFound("Conference not found");
+
+    const FRONTEND_URL = "http://localhost:5173";
+    const invitations = [];
+
+    // ✅ 1. Handle EXISTING reviewers
+    for (const reviewerId of existingReviewerIds) {
+      const reviewer = await strapi.entityService.findOne("api::reviewer.reviewer", reviewerId, {
+        fields: ["id", "firstName", "lastName", "email"],
+      });
+
+      if (!reviewer) continue;
+
+      // 🟢 Generate invitation token
+      const token = uuidv4();
+
+      // 🟢 Create invitation record
+      const invitation = await strapi.entityService.create("api::reviewer-invitation.reviewer-invitation", {
+        data: {
+          conference,
+          reviewer: reviewer.id,
+          reviewerEmail: reviewer.email,
+          status: "pending",
+          token,
+        },
+      });
+
+      invitations.push(invitation);
+
+      // 🟢 Email links
+     const acceptUrl = `http://localhost:1337/api/reviewer-invitation/respond?token=${token}&action=accept`;
+const rejectUrl = `http://localhost:1337/api/reviewer-invitation/respond?token=${token}&action=reject`;
+
+      const textBody = `
+Hello ${reviewer.firstName || ""},
+
+You are invited to review the following conference on BZChair:
+
+Conference: "${conf.Conference_title}"
+
+👉 Accept Invitation: ${acceptUrl}
+❌ Decline Invitation: ${rejectUrl}
+
+Thank you,
+The Organizing Committee
+`;
+
+      const htmlBody = `
+        <p>Hello ${reviewer.firstName || ""},</p>
+        <p>You are invited to review for <strong>${conf.Conference_title}</strong>.</p>
+        <p>
+    <a href="${acceptUrl}" 
+       style="background-color:#4CAF50;color:white;padding:10px 16px;
+              text-decoration:none;border-radius:5px;font-weight:bold;">
+      ✅ Accept Invitation
+    </a>
+    &nbsp;&nbsp;
+    <a href="${rejectUrl}" 
+       style="background-color:#f44336;color:white;padding:10px 16px;
+              text-decoration:none;border-radius:5px;font-weight:bold;">
+      ❌ Decline Invitation
+    </a>
+  </p>
+        <p>Thank you,<br/>The Organizing Committee</p>
+      `;
+
+      await sendEmail(
+        reviewer.email,
+        `Invitation to Review: "${conf.Conference_title}"`,
+        textBody,
+        htmlBody
+      );
+    }
+
+    // ✅ 2. Handle NEW reviewer emails
+    for (const email of newReviewerEmails) {
+      let reviewer = await strapi.db.query("api::reviewer.reviewer").findOne({ where: { email } });
+      const token = uuidv4();
+      let newReviewer = null;
+      if (!reviewer) {
+          reviewer = await strapi.entityService.create("api::reviewer.reviewer", {
+          data: { email:email },
+        });
+      }
+
+      // If reviewer doesn’t exist, just invite by email (no account yet)
+    //  if (existingReviewer) reviewerId = existingReviewer.id;
+
+      await strapi.entityService.create("api::reviewer-invitation.reviewer-invitation", {
+        data: {
+          conference:conference,
+          reviewer:  reviewer.id,
+          reviewerEmail:email,
+          status: "pending",
+          token,
+        },
+      });
+
+      const registerLink = `${FRONTEND_URL}/register`;
+      const acceptLink = `http://localhost:1337/api/reviewer-invitation/respond?token=${token}&action=accept`;
+      const rejectLink = `http://localhost:1337/api/reviewer-invitation/respond?token=${token}&action=reject`;
+
+      const textBody = `
+Hello,
+
+You have been invited as a reviewer for conference "${conf.Conference_title}" on BZChair.
+
+
+✅ Accept Invitation: ${acceptLink}
+❌ Decline Invitation: ${rejectLink}
+
+Thank you,
+The Organizing Committee
+`;
+
+      const htmlBody = `
+        <p>Hello,</p>
+        <p>You are invited to review for <strong>${conf.Conference_title}</strong> on <strong>BZChair</strong>.</p>
+       
+        <p>
+          <a href="${acceptLink}" 
+       style="background-color:#4CAF50;color:white;padding:10px 16px;
+              text-decoration:none;border-radius:5px;font-weight:bold;">
+      ✅ Accept Invitation
+    </a>
+    &nbsp;&nbsp;
+    <a href="${rejectLink}" 
+       style="background-color:#f44336;color:white;padding:10px 16px;
+              text-decoration:none;border-radius:5px;font-weight:bold;">
+      ❌ Decline Invitation
+    </a>
+        </p>
+        <p>Thank you,<br/>The Organizing Committee</p>
+      `;
+
+      await sendEmail(
+        email,
+        `Invitation to Review: "${conf.Conference_title}"`,
+        textBody,
+        htmlBody
+      );
+    }
+
+    return ctx.send({
+      message: "Reviewer invitations sent successfully.",
+      invitations,
+    });
+  } catch (error) {
+    console.error("Invitation error:", error);
+    return ctx.internalServerError("Failed to send reviewer invitations.");
   }
 },
 

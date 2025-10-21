@@ -92,6 +92,12 @@
     },
     "Conference_Topics": {
       "type": "text"
+    },
+    "reviewer_invitations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reviewer-invitation.reviewer-invitation",
+      "mappedBy": "conference"
     }
   }
 }

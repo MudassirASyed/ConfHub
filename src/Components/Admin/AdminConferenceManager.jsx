@@ -20,7 +20,7 @@ const setButtonLoading = (index, action, isLoading) => {
     const fetchRequests = async () => {
       try {
 
-        const response = await axios.get('https://confhub-production-0226.up.railway.app/api/conferences?populate=*');
+        const response = await axios.get('http://localhost:1337/api/conferences?populate=*');
 
         const allRequests = response.data.data;
 
@@ -43,7 +43,7 @@ const setButtonLoading = (index, action, isLoading) => {
   const updateRequestStatus = async (id, status) => {
     try {
 
-      const response = await axios.put('https://confhub-production-0226.up.railway.app/api/conference/update-status', {
+      const response = await axios.put('http://localhost:1337/api/conference/update-status', {
 
         id,
         status,
