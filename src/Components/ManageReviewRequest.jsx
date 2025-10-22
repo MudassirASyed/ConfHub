@@ -13,7 +13,7 @@ const ManageReviewerRequests = () => {
     const fetchPapers = async () => {
       try {
 
-        const response = await fetch("https://confhub-production-0226.up.railway.app/api/papers?populate=*");
+        const response = await fetch("https://bzchair.org/api/papers?populate=*");
 
         const data = await response.json();
         const filtered = data.data.filter(

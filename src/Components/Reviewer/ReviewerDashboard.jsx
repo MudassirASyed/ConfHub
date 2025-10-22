@@ -20,7 +20,7 @@ import {
 } from "react-icons/md";
 
 const ReviewerDashboard = () => {
-  const STRAPI_BASE_URL = "https://confhub-production-0226.up.railway.app"
+  const STRAPI_BASE_URL = "https://bzchair.org"
   const [ongoingPapers, setOngoingPapers] = useState([]);
   const [assignedPapers, setAssignedPapers] = useState([]);
   const [completedReviews, setCompletedReviews] = useState([]);
@@ -38,7 +38,7 @@ const username=storedUser.username
       try {
         const userResponse = await axios.get(
 
-          `https://confhub-production-0226.up.railway.app/api/users/${userId}?populate=reviewerId`
+          `https://bzchair.org/api/users/${userId}?populate=reviewerId`
 
         );
 
@@ -46,12 +46,12 @@ const username=storedUser.username
 
         const [ongoingRes, completedRes, assignedRes] = await Promise.all([
 
-          axios.get("https://confhub-production-0226.up.railway.app/api/papers?populate=*"),
+          axios.get("https://bzchair.org/api/papers?populate=*"),
           axios.get(
-            "https://confhub-production-0226.up.railway.app/api/papers?populate[review][populate]=reviewer&populate=conference"
+            "https://bzchair.org/api/papers?populate[review][populate]=reviewer&populate=conference"
           ),
           axios.get(
-            `https://confhub-production-0226.up.railway.app/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
+            `https://bzchair.org/api/papers?filters[reviewRequestsConfirmed][id][$eq]=${reviewerId}&populate=*`
 
           ),
         ]);

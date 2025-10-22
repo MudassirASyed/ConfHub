@@ -12,10 +12,10 @@ const ManageInvitations = () => {
     const fetchInvitationsData = async () => {
       try {
 
-        const activeResponse = await axios.get('https://confhub-production-0226.up.railway.app/api/invitations/active');
+        const activeResponse = await axios.get('https://bzchair.org/api/invitations/active');
         setActiveInvitations(activeResponse.data);
 
-        const pendingResponse = await axios.get('https://confhub-production-0226.up.railway.app/api/invitations/pending');
+        const pendingResponse = await axios.get('https://bzchair.org/api/invitations/pending');
 
         setPendingInvitations(pendingResponse.data);
 
@@ -32,7 +32,7 @@ const ManageInvitations = () => {
   const handleApprove = async (invitationId) => {
     try {
 
-      await axios.post(`https://confhub-production-0226.up.railway.app/api/invitations/approve/${invitationId}`);
+      await axios.post(`https://bzchair.org/api/invitations/approve/${invitationId}`);
 
       const updatedPending = pendingInvitations.filter(invite => invite.id !== invitationId);
       setPendingInvitations(updatedPending);

@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Set your correct backend URL here
 
-const BASE_API_URL = "https://confhub-production-0226.up.railway.app/api/organizers";  
+const BASE_API_URL = "https://bzchair.org/api/organizers";  
 
 
 // POST request to register an organizer

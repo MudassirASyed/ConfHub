@@ -49,7 +49,7 @@ const [pageSize, setPageSize] = useState(10);
       try {
 
 
-        const response = await axios.get('https://confhub-production-0226.up.railway.app/api/conferences', {
+        const response = await axios.get('https://bzchair.org/api/conferences', {
 
 
           params: {

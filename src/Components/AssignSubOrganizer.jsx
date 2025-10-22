@@ -13,8 +13,8 @@ const AssignSubOrganizer = ({ conferenceId, onClose }) => {
             try {
                 const [authorsResponse, reviewersResponse] = await Promise.all([
 
-                    axios.get('https://confhub-production-0226.up.railway.app/api/authors'),
-                    axios.get('https://confhub-production-0226.up.railway.app/api/reviewers')
+                    axios.get('https://bzchair.org/api/authors'),
+                    axios.get('https://bzchair.org/api/reviewers')
 
                 ]);
 

@@ -54,7 +54,7 @@ const SubmitReview = () => {
       try {
         const res = await axios.get(
 
-          `https://confhub-production-0226.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=conference`
+          `https://bzchair.org/api/papers?filters[id][$eq]=${id}&populate=conference`
 
         );
         const paper = res.data.data[0];
@@ -81,7 +81,7 @@ const SubmitReview = () => {
   //     try {
   //       const res = await axios.get(
 
-  //         `https://confhub-production-0226.up.railway.app/api/reviews?filters[paperId][$eq]=${id}&filters[reviewerId][$eq]=${reviewerId}&populate=*`
+  //         `https://bzchair.org/api/reviews?filters[paperId][$eq]=${id}&filters[reviewerId][$eq]=${reviewerId}&populate=*`
 
   //       );
   //       if (res.data.data.length > 0) {
