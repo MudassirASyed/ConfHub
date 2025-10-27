@@ -252,7 +252,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="flex items-center space-x-3 p-3 bg-gradient-to-r from-sky-50 to-pink-50 rounded-lg">
                         <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-pink-400 rounded-lg flex items-center justify-center text-white font-semibold">
-                          {i}
+                          
                         </div>
                         <div className="flex-1">
                           <div className="h-2 bg-sky-200 rounded-full mb-1"></div>
