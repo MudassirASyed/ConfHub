@@ -9,7 +9,7 @@ export default [
       enabled: true,
       origin: [
         'https://bzchair.netlify.app', // your Netlify frontend
-        'bzchair-backend.up.railway.app' // backend
+        'https://bzchair-backend.up.railway.app' // backend
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
