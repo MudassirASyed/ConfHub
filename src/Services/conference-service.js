@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_API_URL = 'https://bzchair.org/api/conference'; 
+const BASE_API_URL = 'https://bzchair-backend.up.railway.app/api/conference'; 
 
 export const createConference = async (data) => {
     try {

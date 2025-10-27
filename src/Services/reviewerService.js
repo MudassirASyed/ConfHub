@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 
-const BASE_API_URL = "https://bzchair.org/api/reviewers"; 
+const BASE_API_URL = "https://bzchair-backend.up.railway.app/api/reviewers"; 
 
 
 export const registerReviewer = async (data) => {

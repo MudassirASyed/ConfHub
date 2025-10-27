@@ -20,7 +20,7 @@ const setButtonLoading = (index, action, isLoading) => {
     const fetchRequests = async () => {
       try {
 
-        const response = await axios.get('https://bzchair.org/api/conferences?populate=*');
+        const response = await axios.get('https://bzchair-backend.up.railway.app/api/conferences?populate=*');
 
         const allRequests = response.data.data;
 
@@ -43,7 +43,7 @@ const setButtonLoading = (index, action, isLoading) => {
   const updateRequestStatus = async (id, status) => {
     try {
 
-      const response = await axios.put('https://bzchair.org/api/conference/update-status', {
+      const response = await axios.put('https://bzchair-backend.up.railway.app/api/conference/update-status', {
 
         id,
         status,

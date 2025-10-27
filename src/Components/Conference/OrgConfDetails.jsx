@@ -50,7 +50,7 @@ import {
   FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
-    const STRAPI_BASE_URL = "https://bzchair.org"
+    const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app"
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -121,7 +121,7 @@ const [activeTab, setActiveTab] = useState('remaining');
     const fetchReviewers = async () => {
       try {
 
-        const response = await axios.get(`https://bzchair.org/api/reviewers`);
+        const response = await axios.get(`https://bzchair-backend.up.railway.app/api/reviewers`);
 
         const reviewerData = response.data.data.map((r) => ({
           id: r.id,
@@ -158,7 +158,7 @@ const [activeTab, setActiveTab] = useState('remaining');
       try {
         const response = await axios.get(
 
-          `https://bzchair.org/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
+          `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer
 &populate[Organizer][populate]=*`
 
@@ -225,7 +225,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
       const response = await axios.post(
 
-        "https://bzchair.org/api/organizers/final-decision",
+        "https://bzchair-backend.up.railway.app/api/organizers/final-decision",
 
         payload
       );
@@ -270,7 +270,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://bzchair.org/api/conferences/updateReviewDeadline",
+        "https://bzchair-backend.up.railway.app/api/conferences/updateReviewDeadline",
 
         payload
       );
@@ -297,7 +297,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     try {
       const response = await axios.post(
 
-        "https://bzchair.org/api/conferences/updateConferenceStatus",
+        "https://bzchair-backend.up.railway.app/api/conferences/updateConferenceStatus",
 
         payload
       );
@@ -350,7 +350,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       // Replace with your actual API endpoint
       const response = await axios.post(
 
-        "https://bzchair.org/api/organizers/updateReviewFormFields",
+        "https://bzchair-backend.up.railway.app/api/organizers/updateReviewFormFields",
 
         payload
       );
@@ -400,7 +400,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
     axios
 
-      .post("https://bzchair.org/api/organizers/assign-reviewers", payload)
+      .post("https://bzchair-backend.up.railway.app/api/organizers/assign-reviewers", payload)
 
       .then((res) => {
         console.log("Reviewers assigned successfully", res.data);
@@ -1337,7 +1337,7 @@ const handleDownload = async (fileUrl, fileName) => {
                         };
                         const response = await axios.post(
 
-                          "https://bzchair.org/api/conferences/updateSubmissiondate",
+                          "https://bzchair-backend.up.railway.app/api/conferences/updateSubmissiondate",
 
                           payload
                         );

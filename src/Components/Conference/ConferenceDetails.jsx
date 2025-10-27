@@ -16,7 +16,7 @@ const ConferenceDetails = () => {
       try {
         const response = await axios.get(
 
-          `https://bzchair.org/api/conferences?filters[id][$eq]=${id}&populate=*`
+          `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate=*`
 
         );
         setConference(response.data.data);

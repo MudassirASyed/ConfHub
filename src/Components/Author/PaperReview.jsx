@@ -16,7 +16,7 @@ const PaperReviewPage = () => {
         
           const response = await axios.get(
 
-  `https://bzchair.org/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
+  `https://bzchair-backend.up.railway.app/api/papers?filters[id][$eq]=${id}&populate=review&populate=SubmittedTo`
 
 ); 
         const data = response.data;
