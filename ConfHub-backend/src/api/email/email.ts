@@ -1,21 +1,25 @@
 const nodemailer = require('nodemailer');
-
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'bzchair.org',      // Your domain's SMTP host
+  port: 587,                // TLS port
+  secure: false,            // false for port 587 (true only for 465)
   auth: {
-    user: 'mudassiralishah555@gmail.com',  // Your Gmail address
-    pass: 'mfrm qmsz yiey pgzp',   // Your Gmail password (or App Password if 2FA is enabled)
+    user: 'no-reply@bzchair.org',  // Full email address
+    pass: 'Gy;?fbL[etnKN(5#',    // Password for no-reply@bzchair.org
   },
+  tls: {
+    rejectUnauthorized: false // optional, helps avoid some certificate issues
+  }
 });
 
 // Function to send email
 const sendEmail = async (to, subject, text, html) => {
   const mailOptions = {
-    from: 'mudassiralishah555@gmail.com',    // Sender address
-    to,                              // Recipient address
-    subject,                         // Subject line
-    text,                            // Plain text body
-    html,                            // HTML body
+    from: 'no-reply@bzchair.org',  // sender name and address
+    to,                                         // recipient
+    subject,
+    text,
+    html,
   };
 
   try {
