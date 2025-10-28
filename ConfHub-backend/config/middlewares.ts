@@ -8,7 +8,7 @@ export default [
     config: {
       enabled: true,
       origin: [
-        'https://www.bzchair.org', // your Netlify frontend
+        'https://bzchair.netlify.app', // your Netlify frontend
         'https://bzchair-backend.up.railway.app' // backend
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
