@@ -164,17 +164,20 @@ console.log('Conference Title:', conferenceTitle);
 
       async updateSubmissiondate(ctx) {
         try {
-          const { id, Submission_deadline } = ctx.request.body;
+          const { id, Submission_deadline,Start_date,Conference_Topics,Conference_title } = ctx.request.body;
     console.log('pop', ctx.request.body);
     console.log('popo',id, Submission_deadline);
     
-          if (!id || !Submission_deadline) {
-            return ctx.badRequest('Missing id or newDeadline');
+          if (!id || !Submission_deadline || !Start_date || !Conference_Topics || !Conference_title) {
+            return ctx.badRequest('Missing id or newDeadline or other details');
           }
     
           const updated = await strapi.entityService.update('api::conference.conference', id, {
             data: {
+              Conference_title:Conference_title,
               Submission_deadline: Submission_deadline,
+              Conference_Topics:Conference_Topics,
+              Start_date:Start_date,
             },
           });
     

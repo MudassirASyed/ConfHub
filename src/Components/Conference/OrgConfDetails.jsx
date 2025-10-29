@@ -114,6 +114,9 @@ const [activeTab, setActiveTab] = useState('remaining');
   const [selectedExistingReviewers, setSelectedExistingReviewers] = useState(
     []
   );const [statusDropdowns, setStatusDropdowns] = useState({});
+const [conferenceTitle, setConferenceTitle] = useState("");
+const [newStartDate, setNewStartDate] = useState("");
+const [conferenceTopics, setConferenceTopics] = useState("");
 
   const [reviewers, setReviewers] = useState([]);
 
@@ -368,6 +371,9 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
   const openEditModal = () => {
     setNewDeadline(conference[0]?.Submission_deadline || "");
+    setConferenceTitle(conference[0]?.Conference_title || "");
+    setNewStartDate(conference[0]?.Start_date || "");
+    setConferenceTopics(conference[0]?.Conference_Topics || "");
     setIsEditModalOpen(true);
   };
 
@@ -510,37 +516,49 @@ const handleDownload = async (fileUrl, fileName) => {
 
 
                       </div>
-
-                      {/* Organizer and Date Section */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                            <Users className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                              Organizer
-                            </h3>
-                            <p className="text-lg font-semibold text-gray-900">
-                              {conf.Organizer?.Organizer_FirstName}{" "}
-                              {conf.Organizer?.Organizer_LastName}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                            <CalendarIcon className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                              Start Date
-                            </h3>
-                            <p className="text-lg font-semibold text-gray-900">
-                              {conf.Start_date}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+{/* Organizer and Date Section */}
+<div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
+  <div className="flex items-center justify-between gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+          <Users className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            Organizer
+          </h3>
+          <p className="text-lg font-semibold text-gray-900">
+            {conf.Organizer?.Organizer_FirstName}{" "}
+            {conf.Organizer?.Organizer_LastName}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+          <CalendarIcon className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            Start Date
+          </h3>
+          <p className="text-lg font-semibold text-gray-900">
+            {conf.Start_date}
+          </p>
+        </div>
+      </div>
+    </div>
+    {conf.Status !== "completed" && (
+      <button
+        onClick={openEditModal}
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-orange-700 hover:text-orange-800 bg-white hover:bg-orange-50 border border-orange-200 rounded-lg transition-all duration-200 whitespace-nowrap"
+      >
+        <Edit3 className="w-4 h-4" />
+        Edit Conference details
+      </button>
+    )}
+  </div>
+</div>
 
                       {/* Deadlines Section */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -559,15 +577,7 @@ const handleDownload = async (fileUrl, fileName) => {
                                 </p>
                               </div>
                             </div>
-                             {conf.Status !== "completed" && (
-                            <button
-                              onClick={openEditModal}
-                              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-orange-700 hover:text-orange-800 bg-white hover:bg-orange-50 border border-orange-200 rounded-lg transition-all duration-200"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                              Edit
-                            </button>
-                             )}
+                             
                           </div>
                         </div>
 
@@ -1261,118 +1271,167 @@ const handleDownload = async (fileUrl, fileName) => {
         )}
 
         {/* Enhanced Edit submission Deadline Modal */}
-        {isEditModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
-                      <Edit3 className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">
-                        Edit Submission Deadline
-                      </h3>
-                      <p className="text-blue-100 text-sm mt-1">
-                        Update the paper submission deadline
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={closeEditModal}
-                    className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                    <Calendar className="w-4 h-4" />
-                    New Submission Deadline
-                  </label>
-                  <input
-                    type="date"
-                    value={newDeadline}
-                    min={minDateForInputs}
-                    onChange={(e) => setNewDeadline(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={async () => {
-                      if (!newDeadline) {
-                        alert("Submission deadline is required");
-                        return;
-                      }
-
-                      const submissionDate = new Date(newDeadline);
-                      const reviewDate = new Date(
-                        conference[0].Review_deadline
-                      );
-                      const startDate = new Date(conference[0].Start_date);
-
-                      if (submissionDate >= reviewDate) {
-                        alert(
-                          "Submission deadline must be before review deadline"
-                        );
-                        return;
-                      }
-
-                      if (submissionDate >= startDate) {
-                        alert("Submission deadline must be before start date");
-                        return;
-                      }
-                      try {
-                        const payload = {
-                          id: conference[0].id,
-                          Submission_deadline: newDeadline,
-                        };
-                        const response = await axios.post(
-
-                          "https://bzchair-backend.up.railway.app/api/conferences/updateSubmissiondate",
-
-                          payload
-                        );
-
-                        if (response.status === 200) {
-                          const updatedConference = [...conference];
-                          updatedConference[0].Submission_deadline =
-                            newDeadline;
-                          setConference(updatedConference);
-                          closeEditModal();
-                        }
-                      } catch (error) {
-                        console.error(
-                          "Error updating submission deadline:",
-                          error.response?.data || error.message
-                        );
-                      }
-                    }}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                  >
-                    <Save className="w-4 h-4" />
-                    Save Changes
-                  </button>
-                  <button
-                    onClick={closeEditModal}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Cancel
-                  </button>
-                </div>
-              </div>
+      {isEditModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+              <Edit3 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">Edit Conference Details</h3>
+              <p className="text-blue-100 text-sm mt-1">
+                Update the title, dates, and topics
+              </p>
             </div>
           </div>
-        )}
+          <button
+            onClick={closeEditModal}
+            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {/* Conference Title */}
+        <div className="mb-6">
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Edit3 className="w-4 h-4" />
+            Conference Title
+          </label>
+          <input
+            type="text"
+            value={conferenceTitle}
+            onChange={(e) => setConferenceTitle(e.target.value)}
+            placeholder="Enter conference title"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+          />
+        </div>
+
+        {/* Submission Deadline */}
+        <div className="mb-6">
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Calendar className="w-4 h-4" />
+            Submission Deadline
+          </label>
+          <input
+            type="date"
+            value={newDeadline}
+            min={minDateForInputs}
+            onChange={(e) => setNewDeadline(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+          />
+        </div>
+
+        {/* Start Date */}
+        <div className="mb-6">
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Calendar className="w-4 h-4" />
+            Conference Start Date
+          </label>
+          <input
+            type="date"
+            value={newStartDate}
+            min={minDateForInputs}
+            onChange={(e) => setNewStartDate(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+          />
+        </div>
+
+        {/* Conference Topics */}
+        <div className="mb-6">
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <Edit3 className="w-4 h-4" />
+            Conference Topics
+          </label>
+          <textarea
+            rows={3}
+            value={conferenceTopics}
+            onChange={(e) => setConferenceTopics(e.target.value)}
+            placeholder="Enter topics (comma-separated)"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={async () => {
+              if (!newDeadline) {
+                alert("Submission deadline is required");
+                return;
+              }
+
+              const submissionDate = new Date(newDeadline);
+              const reviewDate = new Date(conference[0].Review_deadline);
+              const startDate = new Date(newStartDate || conference[0].Start_date);
+
+              if (submissionDate >= reviewDate) {
+                alert("Submission deadline must be before review deadline");
+                return;
+              }
+
+              if (submissionDate >= startDate) {
+                alert("Submission deadline must be before start date");
+                return;
+              }
+
+              try {
+                const payload = {
+                  id: conference[0].id,
+                  Submission_deadline: newDeadline,
+                  Start_date: newStartDate,
+                  Conference_title: conferenceTitle,
+                  Conference_Topics: conferenceTopics,
+                };
+
+                const response = await axios.post(
+                  "https://bzchair-backend.up.railway.app/api/conferences/updateConferenceDetails",
+                  payload
+                );
+
+                if (response.status === 200) {
+                  const updatedConference = [...conference];
+                  updatedConference[0] = {
+                    ...updatedConference[0],
+                    Submission_deadline: newDeadline,
+                    Start_date: newStartDate,
+                    Conference_title: conferenceTitle,
+                    Conference_Topics: conferenceTopics,
+                  };
+                  setConference(updatedConference);
+                  closeEditModal();
+                }
+              } catch (error) {
+                console.error(
+                  "Error updating conference details:",
+                  error.response?.data || error.message
+                );
+              }
+            }}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+          >
+            <Save className="w-4 h-4" />
+            Save Changes
+          </button>
+          <button
+            onClick={closeEditModal}
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+          >
+            <X className="w-4 h-4" />
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* Enhanced Review Deadline Modal */}
         {showReviewModal && (
