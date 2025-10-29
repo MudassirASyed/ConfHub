@@ -445,7 +445,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
       </div>
     </div>
   );
-const handleDownload = async (fileUrl, fileName) => {
+const handleDownload = async (fileUrl, fileName,paperId) => {
   try {
     const response = await fetch(`${STRAPI_BASE_URL}${fileUrl}`, {
       method: "GET",
@@ -454,7 +454,7 @@ const handleDownload = async (fileUrl, fileName) => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", fileName); // force download
+    link.setAttribute("download", paperId); // force download
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -847,7 +847,7 @@ const handleDownload = async (fileUrl, fileName) => {
 
                      {paper.file?.url && (
   <button
-    onClick={() => handleDownload(paper.file.url, paper.file.name)}
+    onClick={() => handleDownload(paper.file.url, paper.file.name,paper.id)}
     className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors shadow-sm"
   >
     <FiDownload size={16} />
@@ -1391,7 +1391,7 @@ const handleDownload = async (fileUrl, fileName) => {
                 };
 
                 const response = await axios.post(
-                  "https://bzchair-backend.up.railway.app/api/conferences/updateConferenceDetails",
+                  "https://bzchair-backend.up.railway.app/api/conferences/updateSubmissiondate",
                   payload
                 );
 
