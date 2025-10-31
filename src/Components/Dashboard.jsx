@@ -240,30 +240,50 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
             </div>
 
             {/* Hero Image */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-400 to-pink-400 rounded-3xl transform rotate-6 opacity-20"></div>
-              <div className="relative bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-sky-100">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-gray-800"></h3>
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                  </div>
-                  <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center space-x-3 p-3 bg-gradient-to-r from-sky-50 to-pink-50 rounded-lg">
-                        <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-pink-400 rounded-lg flex items-center justify-center text-white font-semibold">
-                          
-                        </div>
-                        <div className="flex-1">
-                          <div className="h-2 bg-sky-200 rounded-full mb-1"></div>
-                          <div className="h-2 bg-pink-200 rounded-full w-3/4"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+    <div className="relative hidden md:flex items-center justify-center min-h-[300px]">
+  {/* background gradient shadow */}
+  <div className="absolute inset-0 bg-gradient-to-r from-sky-400 to-pink-400 rounded-3xl transform rotate-6 opacity-20"></div>
+
+  {/* content card */}
+  <div className="relative bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-sky-100 max-w-xl text-center flex flex-col items-center justify-center">
+    <div className="space-y-5">
+      <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+        Our platform streamlines the management of university-level conferences, providing comprehensive tools for organizers to efficiently manage tracks, sessions, and submissions. We focus on collaboration, simplicity, and success in academic events.
+      </p>
+
+      <div className="space-y-3 w-full">
+        {[{
+          num: 1,
+          title: "Conference Management",
+          desc: "Organize tracks, sessions & submissions",
+        },
+        {
+          num: 2,
+          title: "Seamless Collaboration",
+          desc: "Connect organizers, reviewers & authors",
+        },
+        {
+          num: 3,
+          title: "Academic Excellence",
+          desc: "Simplify success for university events",
+        }].map((item) => (
+          <div
+            key={item.num}
+            className="flex flex-col items-center p-3 bg-gradient-to-r from-sky-50 to-pink-50 rounded-lg hover:shadow-md transition-all"
+          >
+            <div className="w-9 h-9 bg-gradient-to-r from-sky-400 to-pink-400 rounded-lg flex items-center justify-center text-white font-semibold mb-1 text-sm">
+              {item.num}
             </div>
+            <div className="font-medium text-gray-800 text-sm">{item.title}</div>
+            <div className="text-xs text-gray-600">{item.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+
           </div>
         </div>
       </section>
@@ -286,12 +306,12 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                 className="w-full pl-12 pr-4 py-3 bg-white/80 backdrop-blur-md border border-sky-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
               />
             </div> 
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
+            {/* <div className="flex items-center space-x-2 text-sm text-gray-600">
               <span className="bg-gradient-to-r from-sky-500 to-pink-500 text-white px-3 py-1 rounded-full font-medium">
                 {filteredConferences.length}
               </span>
               <span>of {conferences.length} conferences</span>
-            </div>
+            </div> */}
           </div>
 
 
@@ -327,77 +347,147 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
       </div>
       
       {/* Results Info */}
-      {/* <div className="text-sm text-gray-600">
+      <div className="text-md text-gray-1000 ">
         Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
-      </div> */}
+      </div>
     </div>
 
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg ">
-        <thead className="bg-gray-100">
-          <tr>
-           
-            <th className="py-3 px-4 text-left">Conference Title</th>
-            {/* <th className="py-3 px-4 text-left">Description</th> */}
-            <th className="py-3 px-4 text-left">Conference Date</th>
-            <th className="py-3 px-4 text-left">Paper Submission Deadline</th>
-            <th className="py-3 px-4 text-left">Acceptance Notification</th>
-            <th className="py-3 px-4 text-left">Status</th>
-            <th className="py-3 px-4 text-left">Conference Topics</th>
-            {/* <th className="py-3 px-4 text-left">Location</th> */}
-            <th className="py-3 px-4 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPageData.length > 0 ? (
-            currentPageData.map((conference, index) => (
-              <tr key={conference.id} className="border-b cursor-pointer transition-all duration-300
-    hover:bg-gradient-to-r hover:from-sky-200 "
-    onClick={() => handleConferenceClick(conference.id)}>
-                
-                <td className="py-3 px-4 font-semibold">{conference.Conference_title}</td>
-                {/* <td className="py-3 px-4">{conference.Description}</td> */}
-                 <td className="py-3 px-4">{conference.Start_date}</td>
-                <td className="py-3 px-4">{conference.Submission_deadline}</td>
-                <td className="py-3 px-4">
-  {conference.Review_deadline && conference.Review_deadline.trim() !== ""
-    ? conference.Review_deadline
-    : "Not announced yet"}
-</td>
+  {/* TABLE — visible on sm and larger */}
+<div className="relative hidden sm:block">
+  {/* Scroll hint gradient */}
+  <div className="pointer-events-none absolute right-0 top-0 h-full w-7 bg-gradient-to-l from-white to-transparent z-10"></div>
 
-                <td className="py-3 px-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+      <thead className="bg-gray-100 sticky top-0 z-20">
+        <tr>
+          <th className="py-3 px-4 text-left">Conference Title</th>
+          <th className="py-3 px-4 text-left">Conference Date</th>
+          <th className="py-3 px-4 text-left">Paper Submission Deadline</th>
+          <th className="py-3 px-4 text-left">Acceptance Notification</th>
+          <th className="py-3 px-4 text-left">Status</th>
+          <th className="py-3 px-4 text-left">Conference Topics</th>
+          <th className="py-3 px-4 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentPageData.length > 0 ? (
+          currentPageData.map((conference) => (
+            <tr
+              key={conference.id}
+              className="border-b cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-sky-200"
+              onClick={() => handleConferenceClick(conference.id)}
+            >
+              <td className="py-3 px-4 font-semibold">{conference.Conference_title}</td>
+              <td className="py-3 px-4">{conference.Start_date}</td>
+              <td className="py-3 px-4">{conference.Submission_deadline}</td>
+              <td className="py-3 px-4">
+                {conference.Review_deadline && conference.Review_deadline.trim() !== ""
+                  ? conference.Review_deadline
+                  : "Not announced yet"}
+              </td>
+              <td className="py-3 px-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
                     conference.Status === "inProgress"
                       ? "bg-green-100 text-green-800"
                       : "bg-gray-100 text-blue-600"
-                  }`}>
-                    {conference.Status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">{conference.Conference_Topics}</td>
-               
-                {/* <td className="py-3 px-4">{conference.Conference_location}</td> */}
-                <td className="py-3 px-4">
-                  <button
-                    onClick={() => handleConferenceClick(conference.id)}
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    <FaEye /> View
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="9" className="py-4 text-center text-gray-600">
-                No conferences found
+                  }`}
+                >
+                  {conference.Status}
+                </span>
+              </td>
+              <td className="py-3 px-4">{conference.Conference_Topics}</td>
+              <td className="py-3 px-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleConferenceClick(conference.id);
+                  }}
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  <FaEye /> View details
+                </button>
               </td>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="9" className="py-4 text-center text-gray-600">
+              No conferences found
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
+{/* MOBILE CARDS — visible only on small screens */}
+<div className="grid gap-4 sm:hidden mt-4">
+  {currentPageData.length > 0 ? (
+    currentPageData.map((conference) => (
+      <div
+        key={conference.id}
+        className="border rounded-xl p-4 shadow-sm bg-white transition-all hover:shadow-md"
+        onClick={() => handleConferenceClick(conference.id)}
+      >
+        <h3 className="font-bold text-lg mb-2 text-center">{conference.Conference_title}</h3>
+        <p className="text-sm text-gray-600 mb-2">
+          <strong>Date:</strong> {conference.Start_date}
+        </p>
+        <p className="text-sm text-gray-600 mb-2">
+          <strong>Submission Deadline:</strong> {conference.Submission_deadline}
+        </p>
+        <p className="text-sm text-gray-600 mb-2">
+          <strong>Acceptance Notification:</strong>{" "}
+          {conference.Review_deadline && conference.Review_deadline.trim() !== ""
+            ? conference.Review_deadline
+            : "Not announced yet"}
+        </p>
+        <p className="text-sm mb-2">
+          <strong>Status:</strong>{" "}
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              conference.Status === "inProgress"
+                ? "bg-green-100 text-green-800"
+                : "bg-gray-100 text-blue-600"
+            }`}
+          >
+            {conference.Status}
+          </span>
+        </p>
+        <p className="text-sm text-gray-700 mb-3">
+          <strong>Conference Topics:</strong> {conference.Conference_Topics}
+        </p>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleConferenceClick(conference.id);
+          }}
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors w-full justify-center"
+        >
+          <FaEye /> View details
+        </button>
+      </div>
+    ))
+  ) : (
+    <p className="text-center text-gray-600">No conferences found</p>
+  )}
+</div>
+
+ <div className="text-center mb-16 mt-30">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-sky-100 to-pink-100 rounded-full px-4 py-2 text-sm font-medium text-sky-600 mb-4 mt-20">
+              <FiCalendar className="w-4 h-4" />
+              <span>Active Conferences</span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Discover <span className="bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent">Upcoming Events</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Join leading conferences and contribute to the academic community with cutting-edge research and innovations.
+            </p>
+          </div>
     {/* Pagination Controls */}
     {totalPages > 1 && (
       <div className="flex justify-center items-center mt-6 space-x-2">
@@ -734,7 +824,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                 </div>
                 <div className="flex items-center space-x-3 text-gray-400">
                   <BsGlobe className="w-5 h-5 text-purple-400" />
-                  <span>www.bzchair.com</span>
+                  <span>www.bzchair.org</span>
                 </div>
               </div>
             </div>
