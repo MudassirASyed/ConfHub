@@ -379,9 +379,7 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
               onClick={() => handleConferenceClick(conference.id)}
             >
              <td className="py-3 px-4">
-               
-                  {conference.Conference_title}
-              
+                  {conference.Conference_title}              
               </td>
               <td className="py-3 px-4">
                 <div className="line-clamp-2">{conference.Start_date}</div>
