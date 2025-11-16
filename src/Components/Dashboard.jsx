@@ -378,13 +378,23 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
               className="border-b cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-sky-200"
               onClick={() => handleConferenceClick(conference.id)}
             >
-              <td className="py-3 px-4 font-semibold">{conference.Conference_title}</td>
-              <td className="py-3 px-4">{conference.Start_date}</td>
-              <td className="py-3 px-4">{conference.Submission_deadline}</td>
+             <td className="py-3 px-4">
+                <div className="font-semibold line-clamp-2" title={conference.Conference_title}>
+                  {conference.Conference_title}
+                </div>
+              </td>
               <td className="py-3 px-4">
-                {conference.Review_deadline && conference.Review_deadline.trim() !== ""
-                  ? conference.Review_deadline
-                  : "Not announced yet"}
+                <div className="line-clamp-2">{conference.Start_date}</div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="line-clamp-2">{conference.Submission_deadline}</div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="line-clamp-2">
+                  {conference.Review_deadline && conference.Review_deadline.trim() !== ""
+                    ? conference.Review_deadline
+                    : "Not announced yet"}
+                </div>
               </td>
               <td className="py-3 px-4">
                 <span
@@ -397,7 +407,11 @@ const currentPageData = filteredConferences.slice(startIndex, endIndex);
                   {conference.Status}
                 </span>
               </td>
-              <td className="py-3 px-4">{conference.Conference_Topics}</td>
+              <td className="py-3 px-4">
+                <div className="line-clamp-2" title={conference.Conference_Topics}>
+                  {conference.Conference_Topics}
+                </div>
+              </td>
               <td className="py-3 px-4">
                 <button
                   onClick={(e) => {

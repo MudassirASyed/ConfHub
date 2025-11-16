@@ -7,7 +7,7 @@ import { registerReviewer } from '../Services/reviewerService.js';
 
 const RegisterOrganizer = () => {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState("organizer");
+  const [userType, setUserType] = useState("author");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

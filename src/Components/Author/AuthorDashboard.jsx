@@ -47,7 +47,8 @@ const AuthorDashboard = () => {
 
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
   const authorname = userDetails?.username;
-
+//const STRAPI_BASE_URL = "http://localhost:1337";
+ const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app"
   // Debounce conference search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -211,6 +212,26 @@ const AuthorDashboard = () => {
   const handleShowReview = (paperId) => {
     navigate(`/paper-review/${paperId}`);
   };
+  const handleDownload = async (fileUrl, fileName) => {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${fileUrl}`, {
+      method: "GET",
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+};
 
   return (
     <Layout>
@@ -392,7 +413,20 @@ const AuthorDashboard = () => {
                           <td className="py-3 px-4 text-sm text-gray-700">
                             {paper.conference?.Review_deadline || "N/A"}
                           </td>
-                          <td className="py-3 px-4 text-sm">
+                          <td className="py-3 px-4 text-sm text-gray-700">
+                             {/* Download Button */}
+  {paper.file?.url ? (
+    <button
+      onClick={() =>
+        handleDownload(paper.file.url, paper.file.name || "paper.pdf")
+      }
+      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md transition-colors"
+    >
+      Download Paper
+    </button>
+  ) : (
+    <span className="text-gray-400 text-xs">No File</span>
+  )}
                             {paper.finalDecisionByOrganizer ? (
                               <button
                                 onClick={() => handleShowReview(paper.id)}

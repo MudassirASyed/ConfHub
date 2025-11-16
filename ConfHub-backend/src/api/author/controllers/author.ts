@@ -262,7 +262,7 @@ const authorEmail = author.authorEmail
                 });
                 newAuthorIds.push({ id: newAuthor.id });
                 try {
-                  const registerUrl = 'https://bzchair.netlify.app/register';
+                  const registerUrl = 'https://www.bzchair.org/register';
                   await sendEmail(
                     author,
                     'You have been added as a Co-Author in bzchair',
@@ -325,16 +325,19 @@ const authorEmail = author.authorEmail
           }
    let conferenceTitle = '';
 
-          if (submittedTo) {
+        let organizerEmail=''; 
             // Fetch the conference (submittedTo) by ID
-            const conference = await strapi.entityService.findOne('api::conference.conference', submittedTo, {
-              populate: ['Papers'],
-            });
-              if (conference) {
+           const conference: any = await strapi.entityService.findOne(
+  'api::conference.conference',
+  submittedTo,
+  { populate: ['Papers','Organizer'] }
+);
+             
+              
     conferenceTitle = conference.Conference_title || '';
-  }
+    organizerEmail=conference.Organizer?.Organizer_Email;
 
-          }
+          
           const textBody = `Dear ${authorName},
 
 Your paper has been successfully submitted.
@@ -367,6 +370,49 @@ await sendEmail(
   textBody,
   htmlBody
 );
+
+
+//send email to organizer to
+
+
+  const organizerText = `Dear Organizer,
+
+A new paper has been submitted to your conference.
+
+Conference: ${conferenceTitle}
+Paper ID: ${newPaper.id}
+Title: "${paperTitle}"
+Author: ${authorName}
+
+Please review it in your dashboard.
+
+Regards,
+BZChair`;
+
+  const organizerHtml = `
+    <p>Dear Organizer,</p>
+    <p>A new paper has been submitted.</p>
+    <ul>
+      <li><strong>Conference:</strong> ${conferenceTitle}</li>
+      <li><strong>Paper ID:</strong> ${newPaper.id}</li>
+      <li><strong>Title:</strong> "${paperTitle}"</li>
+      <li><strong>Author:</strong> ${authorName}</li>
+    </ul>
+    <p>You can review it on your panel.</p>
+    <p>Regards,<br/>BZChair</p>
+  `;
+ 
+
+await sendEmail(
+  organizerEmail,
+  `New Paper Submission - ${paperTitle}`,
+  organizerText,
+  organizerHtml,
+);
+
+
+
+
           ctx.send({
               message: 'Paper submitted successfully',
               paper: newPaper,
