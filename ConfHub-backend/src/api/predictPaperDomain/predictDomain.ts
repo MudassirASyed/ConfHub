@@ -2,29 +2,13 @@ require('dotenv').config();
 const axios = require("axios");
 
 async function predictDomain(paperTitle, abstract) {
-  const prompt = `Given the following research paper title and abstract, identify the most relevant domain from the following options:
-- Artificial Intelligence
-- Machine Learning
-- Cybersecurity
-- Data Science
-- Cloud Computing
-- Internet of Things
-- Software Engineering
-- Computer Networks
-- Blockchain
-- Human-Computer Interaction
-- Natural Language Processing
-- Computer Vision
-- Big Data
-- DevOps
-- Robotics
-- Edge Computing
-- Quantum Computing
+ const prompt = `
+Given the following research paper title and abstract, determine the most relevant research domain.
+If multiple domains apply, choose the primary one. Return only the domain name.
 
 Title: ${paperTitle}
 Abstract: ${abstract}
-
-Return only the domain name without explanation.`;
+`;
 
   // Updated model options (choose one):
   const models = {
