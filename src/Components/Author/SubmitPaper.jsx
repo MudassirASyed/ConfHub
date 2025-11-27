@@ -14,7 +14,8 @@ const PaperSubmissionForm = () => {
   const [fileName, setFileName] = useState('');
   const [loading, setLoading] = useState(true);
   const [recentConferences, setRecentConferences] = useState([]);
-  
+  const [selectedTrack, setSelectedTrack] = useState('');
+
   const [authors, setAuthors] = useState([
     { name: '', email: '', affiliation: '' }
   ]);
@@ -72,6 +73,8 @@ const PaperSubmissionForm = () => {
 
         setRecentConferences(conferenceResponse.data.data);
         setLoading(false);
+        console.log('ll',conferenceResponse.data.data);
+        
       } catch (error) {
         console.error('Error fetching author data:', error);
         setLoading(false);
@@ -107,6 +110,10 @@ const PaperSubmissionForm = () => {
         alert('Author ID is missing. Please log in again.');
         return;
       }
+if (!selectedTrack) {
+  alert("Please select a track.");
+  return;
+}
 
       const submissionData = new FormData();
       submissionData.append('paperTitle', formData.paperTitle);
@@ -114,6 +121,7 @@ const PaperSubmissionForm = () => {
       submissionData.append('file', formData.file);
       submissionData.append('submittedBy', authorId);
       submissionData.append('submittedTo', id);
+submissionData.append('selectedTrack', selectedTrack);
 
       const filteredAuthors = authors.filter(
         (author) =>
@@ -215,7 +223,7 @@ const PaperSubmissionForm = () => {
                         onChange={handleInputChange}
                         placeholder="Enter your Paper Abstract"
                         rows={6}
-                        className="w-full min-h-[0px] px-4 py-3 border border-gray-300 rounded-xl 
+                        className="w-full min-h-[150px] px-4 py-3 border border-gray-300 rounded-xl 
                                   focus:ring-2 focus:ring-blue-500 focus:border-transparent 
                                        outline-none transition-all duration-200 hover:border-gray-400 
                                   resize-y text-base"
@@ -224,6 +232,32 @@ const PaperSubmissionForm = () => {
 
                   
                 </div>
+{/* Select Track Section */}
+{/* Select Track Section */}
+{conference.conferenceTracks && conference.conferenceTracks.length > 0 && (
+  <div className="space-y-3">
+    <div className="flex items-center gap-2">
+      <FileText className="h-5 w-5 text-blue-600" />
+      <label className="text-lg font-semibold text-gray-800">Select Track <span className="text-red-500">*</span></label>
+    </div>
+    <select
+      value={selectedTrack}
+      onChange={(e) => setSelectedTrack(e.target.value)}
+      required
+      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 hover:border-gray-400"
+    >
+      <option value="">Select a track</option>
+      {conference.conferenceTracks.map((track, index) => (
+        <option key={index} value={track}>
+          {track}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+
+
 
                 {/* File Upload Section */}
                 <div className="space-y-3">
