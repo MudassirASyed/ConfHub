@@ -183,7 +183,7 @@ export default factories.createCoreController('api::author.author', ({ strapi })
     },
    async submitPaper(ctx) {
       try {
-        const { paperTitle, abstract, submittedBy, submittedTo ,authors} = ctx.request.body;
+        const { paperTitle, abstract, submittedBy, submittedTo ,selectedTrack,authors} = ctx.request.body;
         const files = ctx.request.files ;
   console.log('papper',ctx.request.body);    
 
@@ -215,7 +215,8 @@ const authorEmail = author.authorEmail
                   SubmittedTo: submittedTo,
                   conference:submittedTo,
                   Domain:domain,
-                  Author:authorName
+                  Author:authorName,
+                  Selected_Track:selectedTrack
               },
           });
          // console.log('ctx.request.body.authors', ctx.request.body.authors);
@@ -223,6 +224,30 @@ const authorEmail = author.authorEmail
           //for multiple authorss
           if (authors!==0) {
             let parsedAuthors;
+  
+
+  try {
+    parsedAuthors = typeof authors === 'string' ? JSON.parse(authors) : authors;
+  } catch (err) {
+    console.error('Invalid authors JSON:', err);
+  }
+
+  if (Array.isArray(parsedAuthors) && parsedAuthors.length > 0) {
+    const authorNames = parsedAuthors
+      .map(a => a.name)
+      .filter(Boolean)
+      .join(', ');
+
+    const updatedAuthorField = `${authorName}${authorNames ? ', ' + authorNames : ''}`;
+    console.log('uii', updatedAuthorField);
+
+    await strapi.entityService.update('api::paper.paper', newPaper.id, {
+      data: {
+        Author: updatedAuthorField,
+      },
+    });
+  }
+
 
             try {
               const parsedAuthors = Array.isArray(ctx.request.body.authors)

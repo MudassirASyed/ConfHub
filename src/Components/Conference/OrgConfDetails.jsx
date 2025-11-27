@@ -115,6 +115,7 @@ const [activeTab, setActiveTab] = useState('remaining');
     []
   );const [statusDropdowns, setStatusDropdowns] = useState({});
 const [conferenceTitle, setConferenceTitle] = useState("");
+const [conferenceTracks, setConferenceTracks] = useState({});
 const [newStartDate, setNewStartDate] = useState("");
 const [conferenceTopics, setConferenceTopics] = useState("");
 
@@ -374,6 +375,7 @@ console.log(`Number of accepted papers: ${acceptedPapersCount}`);
     setConferenceTitle(conference[0]?.Conference_title || "");
     setNewStartDate(conference[0]?.Start_date || "");
     setConferenceTopics(conference[0]?.Conference_Topics || "");
+    setConferenceTracks(conference[0].conferenceTracks || []);
     setIsEditModalOpen(true);
   };
 
@@ -462,6 +464,22 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
     console.error("Download failed:", error);
   }
 };
+//for tracks in edit deaols model
+const addTrack = () => {
+  setConferenceTracks([...conferenceTracks, ""]);
+};
+
+const handleTrackChange = (index, value) => {
+  const updated = [...conferenceTracks];
+  updated[index] = value;
+  setConferenceTracks(updated);
+};
+
+const removeTrack = (index) => {
+  const updated = conferenceTracks.filter((_, i) => i !== index);
+  setConferenceTracks(updated);
+};
+
   return (
     <>
       <Header />
@@ -900,6 +918,10 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
                     <strong>Submitted:</strong>{" "}
                     {new Date(paper.submissionDate).toLocaleDateString()}
                   </div>
+                  <div className="flex items-center gap-2">
+                   <FileText className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                    <strong>Selected Track:</strong> {paper.Selected_Track || "N/A"}
+                  </div>
                 </div>
 
                 {/* Abstract */}
@@ -1272,10 +1294,11 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
 
         {/* Enhanced Edit submission Deadline Modal */}
       {isEditModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200">
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 ">
+   <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col border border-gray-200">
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white p-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
@@ -1298,7 +1321,7 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+     <div className="p-6 overflow-y-auto flex-1">
         {/* Conference Title */}
         <div className="mb-6">
           <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
@@ -1358,6 +1381,42 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
           />
         </div>
+        {/* Conference Tracks */}
+<div className="mb-6">
+  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+    <Edit3 className="w-4 h-4" />
+    Conference Tracks
+  </label>
+
+  {conferenceTracks.length > 0 &&
+    conferenceTracks.map((track, index) => (
+      <div key={index} className="flex items-center gap-2 mb-2">
+        <input
+          type="text"
+          value={track}
+          onChange={(e) => handleTrackChange(index, e.target.value)}
+          placeholder={`Track ${index + 1}`}
+          className="w-full px-4 py-2 border rounded-lg"
+        />
+        <button
+          type="button"
+          onClick={() => removeTrack(index)}
+          className="text-red-600 font-bold"
+        >
+          ×
+        </button>
+      </div>
+    ))}
+
+  <button
+    type="button"
+    onClick={addTrack}
+    className="text-blue-600 text-sm font-medium"
+  >
+    + Add Track
+  </button>
+</div>
+
 
         <div className="flex gap-3">
           <button
@@ -1368,10 +1427,10 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
               }
 
               const submissionDate = new Date(newDeadline);
-              const reviewDate = new Date(conference[0].Review_deadline);
+             const reviewDate = conference[0].Review_deadline ? new Date(conference[0].Review_deadline) : null;
               const startDate = new Date(newStartDate || conference[0].Start_date);
 
-              if (submissionDate >= reviewDate) {
+              if (reviewDate && submissionDate >= reviewDate) {
                 alert("Submission deadline must be before review deadline");
                 return;
               }
@@ -1388,6 +1447,8 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
                   Start_date: newStartDate,
                   Conference_title: conferenceTitle,
                   Conference_Topics: conferenceTopics,
+                  conferenceTracks: conferenceTracks.filter(t => t.trim() !== "")
+
                 };
 
                 const response = await axios.post(
@@ -1406,6 +1467,7 @@ const handleDownload = async (fileUrl, fileName,paperId) => {
                   };
                   setConference(updatedConference);
                   closeEditModal();
+                  window.location.reload();
                 }
               } catch (error) {
                 console.error(

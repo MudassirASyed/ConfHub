@@ -92,6 +92,10 @@
     },
     "Conference_Topics": {
       "type": "text"
+    },
+    "conferenceTracks": {
+      "type": "json",
+      "required": false
     }
   }
 }

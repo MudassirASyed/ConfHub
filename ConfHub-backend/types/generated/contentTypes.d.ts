@@ -495,6 +495,7 @@ export interface ApiConferenceConference extends Struct.CollectionTypeSchema {
     Conference_time: Schema.Attribute.Time;
     Conference_title: Schema.Attribute.String & Schema.Attribute.Required;
     Conference_Topics: Schema.Attribute.Text;
+    conferenceTracks: Schema.Attribute.JSON;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -612,6 +613,7 @@ export interface ApiPaperPaper extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::reviewer.reviewer'
     >;
+    Selected_Track: Schema.Attribute.String;
     submissionDate: Schema.Attribute.DateTime;
     submitted_by: Schema.Attribute.Relation<'manyToMany', 'api::author.author'>;
     SubmittedTo: Schema.Attribute.Relation<

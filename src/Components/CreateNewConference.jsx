@@ -19,6 +19,7 @@ const CreateConference = () => {
     submissionDeadline: '',
     reviewDeadline: '',
     organizerId: '',
+     conferenceTracks: [],
   });
 
   const [errors, setErrors] = useState({});
@@ -44,6 +45,23 @@ const CreateConference = () => {
       setErrors(prev => ({ ...prev, [id]: '' }));
     }
   };
+  const handleTrackChange = (index, value) => {
+  const updatedTracks = [...formData.conferenceTracks];
+  updatedTracks[index] = value;
+  setFormData({ ...formData, conferenceTracks: updatedTracks });
+};
+const addTrack = () => {
+  setFormData({
+    ...formData,
+    conferenceTracks: [...formData.conferenceTracks, ""],
+  });
+};
+
+const removeTrack = (index) => {
+  const updatedTracks = formData.conferenceTracks.filter((_, i) => i !== index);
+  setFormData({ ...formData, conferenceTracks: updatedTracks });
+};
+
 // compute tomorrow's date in yyyy-mm-dd for the input min attribute
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -327,6 +345,41 @@ const validateForm = () => {
     List main topics for paper submissions. This helps authors identify relevant conferences.
   </p>
 </div>
+<div className="mt-4">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Conference Tracks *
+  </label>
+
+  {formData.conferenceTracks.length > 0 && formData.conferenceTracks.map((track, index) => (
+    <div key={index} className="flex gap-2 mb-2">
+      <input
+        type="text"
+        value={track}
+        onChange={(e) => handleTrackChange(index, e.target.value)}
+        placeholder={`Track ${index + 1}`}
+        className="w-full px-4 py-2 border rounded-lg"
+      />
+
+      <button
+        type="button"
+        onClick={() => removeTrack(index)}
+        className="text-red-600 font-bold"
+      >
+        ×
+      </button>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={addTrack}
+    className="text-blue-600 text-sm font-medium"
+  >
+    + Add Track
+  </button>
+</div>
+
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">

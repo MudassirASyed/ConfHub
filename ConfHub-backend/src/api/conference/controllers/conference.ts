@@ -23,7 +23,8 @@ export default factories.createCoreController('api::conference.conference', ({ s
                 speakerNames,
                 submissionDeadline,
                 reviewDeadline,
-                organizerId
+                organizerId,
+                conferenceTracks
               
             } = ctx.request.body;
         
@@ -60,6 +61,7 @@ export default factories.createCoreController('api::conference.conference', ({ s
                   Submission_deadline:submissionDeadline,
                   Organizer: organizerId,
                   requestStatus:'pending',
+                  conferenceTracks:conferenceTracks
                 }, 
             
               });
@@ -164,7 +166,7 @@ console.log('Conference Title:', conferenceTitle);
 
       async updateSubmissiondate(ctx) {
         try {
-          const { id, Submission_deadline,Start_date,Conference_Topics,Conference_title } = ctx.request.body;
+          const { id, Submission_deadline,Start_date,Conference_Topics,Conference_title ,conferenceTracks } = ctx.request.body;
     console.log('pop', ctx.request.body);
     console.log('popo',id, Submission_deadline);
     
@@ -178,6 +180,7 @@ console.log('Conference Title:', conferenceTitle);
               Submission_deadline: Submission_deadline,
               Conference_Topics:Conference_Topics,
               Start_date:Start_date,
+              conferenceTracks:conferenceTracks
             },
           });
     

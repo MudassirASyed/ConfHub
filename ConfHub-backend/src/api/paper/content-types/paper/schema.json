@@ -55,8 +55,7 @@
     "reviewRequests": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::reviewer.reviewer",
-      "required": false
+      "target": "api::reviewer.reviewer"
     },
     "reviewRequestsConfirmed": {
       "type": "relation",
@@ -75,6 +74,9 @@
       "mappedBy": "paper"
     },
     "finalDecisionByOrganizer": {
+      "type": "string"
+    },
+    "Selected_Track": {
       "type": "string"
     }
   }
