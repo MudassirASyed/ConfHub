@@ -124,5 +124,13 @@ export default {
         },
         
       },
+      {
+        method: 'POST',
+        path: '/organizers/invite-reviewers', // Custom endpoint for registration
+        handler: 'organizer.inviteReviewersToConf',
+        config: {
+          auth: false, // Disable authentication for this specific endpoint (if needed)
+        },
+      }
     ],
   };

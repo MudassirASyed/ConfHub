@@ -96,6 +96,12 @@
     "conferenceTracks": {
       "type": "json",
       "required": false
+    },
+    "reviewer_invitations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reviewer-invitation.reviewer-invitation",
+      "mappedBy": "conference"
     }
   }
 }
