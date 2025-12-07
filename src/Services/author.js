@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Set your correct backend URL here
 
-const BASE_API_URL = "https://bzchair-backend.up.railway.app/api/author"; 
+const BASE_API_URL = "http://localhost:1337/api/author"; 
 
 
 export const registerAuthor = async (data) => {

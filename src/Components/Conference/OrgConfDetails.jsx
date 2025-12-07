@@ -160,7 +160,7 @@ const OrgConfDetails = () => {
     const fetchReviewers = async () => {
       try {
         const response = await axios.get(
-          `https://bzchair-backend.up.railway.app/api/reviewers`
+          `http://localhost:1337/api/reviewers`
         );
 
         const reviewerData = response.data.data.map((r) => ({
@@ -198,7 +198,7 @@ const OrgConfDetails = () => {
       try {
         //for already invited reviewer for conference
         const res = await axios.get(
-          `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[reviewer_invitations][populate]=reviewer`
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[reviewer_invitations][populate]=reviewer`
         );
         const list = res.data?.data[0]?.reviewer_invitations || [];
 
@@ -225,7 +225,7 @@ const OrgConfDetails = () => {
         setAcceptedReviewers(acceptedReviewers);
         console.log("accc2", acceptedReviewers);
         const response = await axios.get(
-          `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
+          `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer&populate[Papers][populate][reviewRequestsConfirmed][populate]=*
 &populate[Organizer][populate]=*`
         );
@@ -345,7 +345,7 @@ const OrgConfDetails = () => {
       console.log("payy", payload);
 
       const response = await axios.post(
-        "https://bzchair-backend.up.railway.app/api/organizers/final-decision",
+        "http://localhost:1337/api/organizers/final-decision",
 
         payload
       );
@@ -389,7 +389,7 @@ const OrgConfDetails = () => {
 
     try {
       const response = await axios.post(
-        "https://bzchair-backend.up.railway.app/api/conferences/updateReviewDeadline",
+        "http://localhost:1337/api/conferences/updateReviewDeadline",
 
         payload
       );
@@ -415,7 +415,7 @@ const OrgConfDetails = () => {
 
     try {
       const response = await axios.post(
-        "https://bzchair-backend.up.railway.app/api/conferences/updateConferenceStatus",
+        "http://localhost:1337/api/conferences/updateConferenceStatus",
 
         payload
       );
@@ -467,7 +467,7 @@ const OrgConfDetails = () => {
 
       // Replace with your actual API endpoint
       const response = await axios.post(
-        "https://bzchair-backend.up.railway.app/api/organizers/updateReviewFormFields",
+        "http://localhost:1337/api/organizers/updateReviewFormFields",
 
         payload
       );
@@ -506,7 +506,7 @@ const OrgConfDetails = () => {
         setIsAssignModalOpen(true); // Open the new modal
       }
       const res = await axios.get(
-        `https://bzchair-backend.up.railway.app/api/papers/?filters[id][$eq]=${paperId}&populate=reviewRequestsConfirmed`
+        `http://localhost:1337/api/papers/?filters[id][$eq]=${paperId}&populate=reviewRequestsConfirmed`
       );
 
       const paper = res.data?.data;
@@ -560,7 +560,7 @@ const OrgConfDetails = () => {
 
       axios
         .post(
-          "https://bzchair-backend.up.railway.app/api/organizers/invite-reviewers",
+          "http://localhost:1337/api/organizers/invite-reviewers",
           payload
         )
         .then((res) => {
@@ -588,7 +588,7 @@ const OrgConfDetails = () => {
       setOpen(true);
 
       const res = await axios.get(
-        `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate=reviewer_invitations`
+        `http://localhost:1337/api/conferences?filters[id][$eq]=${id}&populate=reviewer_invitations`
       );
       console.log("invv", res.data.data);
 
@@ -629,7 +629,7 @@ const OrgConfDetails = () => {
     axios
 
       .post(
-        "https://bzchair-backend.up.railway.app/api/organizers/assign-reviewers",
+        "http://localhost:1337/api/organizers/assign-reviewers",
         payload
       )
 
@@ -1856,7 +1856,7 @@ const OrgConfDetails = () => {
                         };
 
                         const response = await axios.post(
-                          "https://bzchair-backend.up.railway.app/api/conferences/updateSubmissiondate",
+                          "http://localhost:1337/api/conferences/updateSubmissiondate",
                           payload
                         );
 

@@ -44,7 +44,7 @@ const OrganizerDashboard = () => {
 
                 if (subOrganizerRoles.length > 0) {
 
-                    const response = await axios.get(`https://bzchair-backend.up.railway.app/api/conferences?filters[requestStatus][$eq]=approved&filters[AssignedSubOrganizer][id][$eq]=${userId}&populate=*`);
+                    const response = await axios.get(`http://localhost:1337/api/conferences?filters[requestStatus][$eq]=approved&filters[AssignedSubOrganizer][id][$eq]=${userId}&populate=*`);
 
                     setConferences(response.data.data);
                     setLoading(false);
@@ -60,7 +60,7 @@ const OrganizerDashboard = () => {
 
                 // Fetch conferences where requestStatus is approved and they are for the current organizer
 
-                const response = await axios.get(`https://bzchair-backend.up.railway.app/api/conferences?filters[requestStatus][$eq]=approved&filters[Organizer][$eq]=${organizerId}&populate=*`);
+                const response = await axios.get(`http://localhost:1337/api/conferences?filters[requestStatus][$eq]=approved&filters[Organizer][$eq]=${organizerId}&populate=*`);
 
 
                 setConferences(response.data.data);
@@ -125,7 +125,7 @@ const OrganizerDashboard = () => {
             setLoading(true);
             try {
 
-                const response = await axios.get('https://bzchair-backend.up.railway.app/api/paper-reviews');
+                const response = await axios.get('http://localhost:1337/api/paper-reviews');
 
                 setPaperReviews(response.data || []);
             } catch (error) {

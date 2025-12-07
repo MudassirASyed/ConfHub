@@ -15,8 +15,8 @@ import {  assignSubOrganizerRole } from '../Services/api.js';
             const fetchUsers = async () => {
                 try {
                 const [authorsResponse, reviewersResponse] = await Promise.all([
-    axios.get(`https://bzchair-backend.up.railway.app/api/authors?populate=UserID.SubOrganizerRole`),
-    axios.get(`https://bzchair-backend.up.railway.app/api/reviewers?populate=UserID.SubOrganizerRole`)
+    axios.get(`http://localhost:1337/api/authors?populate=UserID.SubOrganizerRole`),
+    axios.get(`http://localhost:1337/api/reviewers?populate=UserID.SubOrganizerRole`)
     ]);
 
     console.log('res',authorsResponse.data.data);

@@ -107,7 +107,7 @@ const AuthorDashboard = () => {
         try {
           const author = await axios.get(
 
-            `https://bzchair-backend.up.railway.app/api/authors?filters[id][$eq]=${authorId}&populate=*`
+            `http://localhost:1337/api/authors?filters[id][$eq]=${authorId}&populate=*`
 
           );
 
@@ -160,7 +160,7 @@ const AuthorDashboard = () => {
             .join("&");
           const conferenceResponse = await axios.get(
 
-            `https://bzchair-backend.up.railway.app/api/conferences?filters[requestStatus][$eq]=approved&filters[Status][$eq]=inProgress&${filters}&populate[Papers][populate]=submitted_by`
+            `http://localhost:1337/api/conferences?filters[requestStatus][$eq]=approved&filters[Status][$eq]=inProgress&${filters}&populate[Papers][populate]=submitted_by`
 
           );
           console.log("recentt", conferenceResponse.data.data);
@@ -191,7 +191,7 @@ const AuthorDashboard = () => {
         }
         const papersResponse = await axios.get(
 
-          `https://bzchair-backend.up.railway.app/api/papers?filters[submitted_by][id][$eq]=${authorId}&populate=*`
+          `http://localhost:1337/api/papers?filters[submitted_by][id][$eq]=${authorId}&populate=*`
 
         );
         setSubmittedPapers(papersResponse.data?.data);
