@@ -131,6 +131,23 @@ export default {
         config: {
           auth: false, // Disable authentication for this specific endpoint (if needed)
         },
-      }
+      },
+       {
+      method: "POST",
+      path: "/organizers/participant-registration",
+      handler: "organizer.participantRegistration",
+      config: {
+        auth: false,
+      },
+     },
+      {
+      method: "POST",
+      path: "/organizers/send-email",
+      handler: "organizer.sendEmailToParticipant",
+      config: {
+        auth: false,
+      },
+     },
+
     ],
   };

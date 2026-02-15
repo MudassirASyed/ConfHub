@@ -65,9 +65,13 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "Type": {
-      "type": "string"
-    },
+   "Type": {
+  "type": "enumeration",
+  "enum": ["author", "reviewer", "organizer","admin"],
+  "default": [],
+  "multiple": true
+},
+
     "organizerId": {
       "type": "relation",
       "relation": "oneToOne", 

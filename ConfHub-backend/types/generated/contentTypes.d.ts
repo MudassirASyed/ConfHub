@@ -511,6 +511,10 @@ export interface ApiConferenceConference extends Struct.CollectionTypeSchema {
       'api::organizer.organizer'
     >;
     Papers: Schema.Attribute.Relation<'oneToMany', 'api::paper.paper'>;
+    participants: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::participant.participant'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     requestStatus: Schema.Attribute.Enumeration<
       ['pending', 'approved', 'rejected']
@@ -526,6 +530,8 @@ export interface ApiConferenceConference extends Struct.CollectionTypeSchema {
     Start_date: Schema.Attribute.Date & Schema.Attribute.Required;
     Status: Schema.Attribute.Enumeration<['inProgress', 'completed']>;
     Submission_deadline: Schema.Attribute.Date & Schema.Attribute.Required;
+    submissionDisabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     Track_description: Schema.Attribute.Text;
     Track_title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -623,6 +629,49 @@ export interface ApiPaperPaper extends Struct.CollectionTypeSchema {
     SubmittedTo: Schema.Attribute.Relation<
       'oneToOne',
       'api::conference.conference'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiParticipantParticipant extends Struct.CollectionTypeSchema {
+  collectionName: 'participants';
+  info: {
+    displayName: 'participant';
+    pluralName: 'participants';
+    singularName: 'participant';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amountPaid: Schema.Attribute.String;
+    bankDetails: Schema.Attribute.String;
+    conference: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::conference.conference'
+    >;
+    contact: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::participant.participant'
+    > &
+      Schema.Attribute.Private;
+    Name: Schema.Attribute.String;
+    paperTitle: Schema.Attribute.String;
+    papertoPresent: Schema.Attribute.Relation<'oneToOne', 'api::paper.paper'>;
+    presenter: Schema.Attribute.Relation<'oneToOne', 'api::author.author'>;
+    publishedAt: Schema.Attribute.DateTime;
+    receipt: Schema.Attribute.Media<'images' | 'files'>;
+    registrationType: Schema.Attribute.Enumeration<
+      ['participant', 'Presenter']
     >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1253,7 +1302,10 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::conference.conference'
     >;
-    Type: Schema.Attribute.String;
+    Type: Schema.Attribute.Enumeration<
+      ['author', 'reviewer', 'organizer', 'admin']
+    > &
+      Schema.Attribute.DefaultTo<[]>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1281,6 +1333,7 @@ declare module '@strapi/strapi' {
       'api::conference.conference': ApiConferenceConference;
       'api::organizer.organizer': ApiOrganizerOrganizer;
       'api::paper.paper': ApiPaperPaper;
+      'api::participant.participant': ApiParticipantParticipant;
       'api::review.review': ApiReviewReview;
       'api::reviewer-invitation.reviewer-invitation': ApiReviewerInvitationReviewerInvitation;
       'api::reviewer.reviewer': ApiReviewerReviewer;

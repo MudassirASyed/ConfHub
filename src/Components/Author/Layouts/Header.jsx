@@ -13,7 +13,7 @@ const Header = () => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef(null); // To detect click outside dropdown
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-
+    const [availableRoles, setAvailableRoles] = useState([]);
     const toggleDropdown = () => {
         setDropdownVisible((prev) => !prev);
     };
@@ -64,6 +64,32 @@ const Header = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+     useEffect(() => {
+        const storedUser = localStorage.getItem('userDetails');
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            const roles = ['Author']; // Default role
+
+           if (Array.isArray(user.SubOrganizerRole) && user.SubOrganizerRole.length > 0) {
+            roles.push('TPC_Chair');
+        }
+           if (
+  user.reviewerId &&
+  (Array.isArray(user.reviewerId) ? user.reviewerId.length > 0 : true)
+) {
+  roles.push('Reviewer');
+}
+if (
+  user.organizerId &&
+  (Array.isArray(user.organizerId) ? user.organizerId.length > 0 : true)
+) {
+  roles.push('Organizer');
+}
+
+            setAvailableRoles(roles);
+        }
+    }, []);
     const userDetails = JSON.parse(localStorage.getItem('userDetails'));
     const hasSubOrganizerRole = userDetails?.SubOrganizerRole?.length > 0;
     return (
@@ -98,10 +124,10 @@ const Header = () => {
             </div>
 
             {/* Role Switcher */}
-            {hasSubOrganizerRole && (
+            {(
     <div className="flex items-center ml-auto mr-2 text-base">
         <RoleSwitcherButton
-            roles={['Author', 'TPC_Chair']}
+           roles={availableRoles}
             onRoleSelect={handleRoleChange}
         />
     </div>

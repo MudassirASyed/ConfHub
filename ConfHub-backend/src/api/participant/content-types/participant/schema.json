@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "participants",
+  "info": {
+    "singularName": "participant",
+    "pluralName": "participants",
+    "displayName": "participant"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "registrationType": {
+      "type": "enumeration",
+      "enum": [
+        "participant",
+        "Presenter"
+      ]
+    },
+    "presenter": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::author.author"
+    },
+    "papertoPresent": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::paper.paper"
+    },
+    "paperTitle": {
+      "type": "string"
+    },
+    "amountPaid": {
+      "type": "string"
+    },
+    "receipt": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "conference": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::conference.conference",
+      "inversedBy": "participants"
+    },
+    "bankDetails": {
+      "type": "string"
+    }
+  }
+}

@@ -33,9 +33,21 @@ const Header = () => {
             const user = JSON.parse(storedUser);
             const roles = ['Reviewer']; // Default role
 
-            if (user.SubOrganizerRole && user.SubOrganizerRole.length > 0) {
-                roles.push('TPC_Chair');
-            }
+           if (Array.isArray(user.SubOrganizerRole) && user.SubOrganizerRole.length > 0) {
+            roles.push('TPC_Chair');
+        }
+            if (
+  user.authorId &&
+  (Array.isArray(user.authorId) ? user.authorId.length > 0 : true)
+) {
+  roles.push('Author');
+}
+if (
+  user.organizerId &&
+  (Array.isArray(user.organizerId) ? user.organizerId.length > 0 : true)
+) {
+  roles.push('Organizer');
+}
 
             setAvailableRoles(roles);
         }
@@ -54,6 +66,8 @@ const Header = () => {
     }, []);
     const userDetails = JSON.parse(localStorage.getItem('userDetails'));
     const hasSubOrganizerRole = userDetails?.SubOrganizerRole?.length > 0;
+    console.log('rr',userDetails);
+    
     return (
         <header className="bg-gray-100 p-4 flex justify-between items-center border-b border-gray-300">
             <div className="flex items-center relative">
@@ -84,7 +98,7 @@ const Header = () => {
             </div>
 
             {/* Conditional Role Switcher */}
-            {hasSubOrganizerRole && (
+            {(
                 <div className="flex items-center ml-auto mr-2 text-base">
                     <RoleSwitcherButton
                         roles={availableRoles}
