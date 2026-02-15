@@ -28,3 +28,9 @@ dist-ssr
 *.sln
 *.sw?
 *.pdf
+
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif

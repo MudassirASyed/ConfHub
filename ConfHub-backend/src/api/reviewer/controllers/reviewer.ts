@@ -64,11 +64,22 @@ const updatedReviewer = await strapi.entityService.update('api::reviewer.reviewe
               UserID: newUser.id,
   },
 });
+const defaultAuthor= await strapi.entityService.create('api::author.author',
+   {
+  data: {
+                firstName: firstName,
+              lastName: lastName,
+              authorEmail:email,
+              alternativeContact: alternativeContact,
+              UserID: newUser.id,
+  },
+});
 
 // ✅ Step 3: Link reviewerId in the user table (back-reference)
 await strapi.entityService.update('plugin::users-permissions.user', newUser.id, {
   data: {
     reviewerId: updatedReviewer.id,
+    authorId: defaultAuthor.id
   },
 });
             
@@ -110,6 +121,7 @@ await strapi.entityService.update('plugin::users-permissions.user', newUser.id, 
               { email: username } // Or check by email
             ],
           },
+          populate: ["reviewerId"]
         });
       } catch (err) {
        // console.error("Error fetching user:", err);
@@ -120,10 +132,9 @@ await strapi.entityService.update('plugin::users-permissions.user', newUser.id, 
         
         return ctx.badRequest('Invalid credentials');
       }
-      if (user.Type !== 'reviewer') {
-        // If Type is not organizer, return an error
-        return ctx.badRequest('Invalid credentials');
-      }
+      if (!user.reviewerId) {
+  return ctx.badRequest('Invalid credentials: Not a reviewer');
+}
       if (!user.confirmed  || user.blocked) {
         
         return ctx.internalServerError('Account not approved yet');

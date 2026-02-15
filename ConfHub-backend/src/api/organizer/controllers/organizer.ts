@@ -33,6 +33,7 @@ export default factories.createCoreController('api::organizer.organizer', ({ str
        
         const fullName = `${firstName} ${lastName}`;
         let newOrganizer:any;
+        let defaultAuthor: any
         const newUser = await strapi.entityService.create(
           'plugin::users-permissions.user',
           {
@@ -58,12 +59,22 @@ export default factories.createCoreController('api::organizer.organizer', ({ str
           UserID: newUser.id,
         },
       });
+         defaultAuthor = await strapi.entityService.create('api::author.author', {
+          data: {
+            firstName: firstName,
+              lastName: lastName,
+              authorEmail:email,
+              alternativeContact: alternativeContact,
+              UserID: newUser.id,
+        },
+      });
       await strapi.entityService.update(
         'plugin::users-permissions.user',
         newUser.id, // ID of the user to update
         {
           data: {
-            organizerId: newOrganizer.id, // Add the organizer ID to the user
+            organizerId: newOrganizer.id, 
+            authorId:defaultAuthor.id
           },
         }
       );
@@ -108,6 +119,7 @@ export default factories.createCoreController('api::organizer.organizer', ({ str
               { email: username } // Or check by email
             ],
           },
+          populate: ["organizerId"]
         });
       } catch (err) {
        // console.error("Error fetching user:", err);
@@ -118,10 +130,9 @@ export default factories.createCoreController('api::organizer.organizer', ({ str
         
         return ctx.badRequest('Invalid credentials');
       }
-      if (user.Type !== 'organizer') {
-        // If Type is not organizer, return an error
-        return ctx.badRequest('Invalid credentials');
-      }
+     if (!user.organizerId) {
+  return ctx.badRequest('Invalid credentials: Not an Organizer');
+}
       if (!user.confirmed  || user.blocked) {
         
         return ctx.internalServerError('Account not approved yet');
@@ -1060,12 +1071,51 @@ The Organizing Committee
       let reviewer = await strapi.db.query("api::reviewer.reviewer").findOne({ where: { email } });
       const token = uuidv4();
       let newReviewer = null;
-      if (!reviewer) {
-          reviewer = await strapi.entityService.create("api::reviewer.reviewer", {
-          data: { email:email },
-        });
-      }
+     if (!reviewer) {
+  // Create a new reviewer record
+  reviewer = await strapi.entityService.create("api::reviewer.reviewer", {
+    data: { email },
+  });
 
+
+// 2️⃣ Check if a user exists with this email
+const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+  where: { email },
+  populate: ["authorId", "organizerId"], // populate the author relation
+});
+
+if (user && user.authorId && user.authorId.id) {
+  // Update user with reviewerId
+  await strapi.entityService.update("plugin::users-permissions.user", user.id, {
+    data: { reviewerId: reviewer.id },
+  });
+console.log("nnnaa", user);
+
+  // Update reviewer with firstName and lastName from author
+  const { firstName, lastName } = user.authorId;
+  await strapi.entityService.update("api::reviewer.reviewer", reviewer.id, {
+    data: {
+      firstName: firstName || null,
+      lastName: lastName || null,
+    },
+  });
+}
+  if (user && user.organizerId && user.organizerId.id) {
+    // Update user with reviewerId
+    await strapi.entityService.update("plugin::users-permissions.user", user.id, {
+      data: { reviewerId: reviewer.id },
+    });
+
+    // Update reviewer with firstName and lastName from organizer
+    const { Organizer_FirstName, Organizer_LastName } = user.organizerId;
+    await strapi.entityService.update("api::reviewer.reviewer", reviewer.id, {
+      data: {
+        firstName: Organizer_FirstName || null,
+        lastName: Organizer_LastName || null,
+      },
+    });
+  }
+}
       // If reviewer doesn’t exist, just invite by email (no account yet)
     //  if (existingReviewer) reviewerId = existingReviewer.id;
 
@@ -1129,6 +1179,250 @@ The Organizing Committee
     return ctx.internalServerError("Failed to send reviewer invitations.");
   }
 },
+
+async participantRegistration(ctx) {
+  try {
+    const body = ctx.request.body;
+    const files = ctx.request.files;
+
+    const {
+      name,
+      contact,
+      email,
+      registerAs,
+      paperId,
+      paperTitle,
+      amount,
+      bankDetails,
+      conferenceId
+    } = body;
+
+    if (!name || !email || !contact || !conferenceId) {
+      return ctx.badRequest("Missing required fields");
+    }
+
+    let author = null;
+    let paper = null;
+
+    // =========================
+    // PRESENTER VALIDATION
+    // =========================
+    if (registerAs === "presenter") {
+
+      if (!paperId)
+        return ctx.badRequest("Paper ID required for presenter");
+
+      // 1️⃣ find author by email
+      author = await strapi.db.query("api::author.author").findOne({
+        where: { authorEmail: email },
+        populate: ["submittedPapers"]
+      });
+
+      if (!author)
+        return ctx.badRequest("No author found with this email");
+
+      paper = author.submittedPapers?.find(
+        (p) => String(p.id) === String(paperId)
+      );
+
+      if (!paper)
+        return ctx.badRequest("Paper does not belong to this author");
+    }
+
+    // =========================
+    // CREATE PARTICIPANT
+    // =========================
+    const participant = await strapi.entityService.create(
+      "api::participant.participant",
+      {
+        data: {
+          Name: name,
+          contact: contact,
+          email: email,
+          registrationType: registerAs === "presenter" ? "Presenter" : "participant",
+          amountPaid: amount,
+          presenter: author ? author.id : null,
+          conference: conferenceId,
+          papertoPresent: paper ? paper.id : null,
+          paperTitle:paperTitle,
+          publishedAt: new Date()
+        }
+      }
+    );
+
+    // =========================
+    // UPLOAD RECEIPT
+    // =========================
+    if (files && files.receipt) {
+      const uploadedFiles = await strapi
+        .plugin("upload")
+        .service("upload")
+        .upload({
+          data: {},
+          files: files.receipt,
+        });
+
+      await strapi.entityService.update(
+        "api::participant.participant",
+        participant.id,
+        {
+          data: {
+            receipt: uploadedFiles[0].id,
+          },
+        }
+      );
+    }
+
+    // =========================
+    // FETCH CONFERENCE AND ORGANIZER
+    // =========================
+    const conf = await strapi.db.query("api::conference.conference").findOne({
+      where: { id: conferenceId },
+      populate: ["Organizer"]
+    });
+console.log('conf',conf);
+    const conferenceTitle = conf.Conference_title;
+    const organizer = conf.Organizer ;
+    console.log('org',organizer);
+    const organizerEmail=organizer.Organizer_Email;
+
+
+    // =========================
+    // EMAIL TO PARTICIPANT
+    // =========================
+    const participantSubject = `Registration Received: "${conferenceTitle}"`;
+    const participantText = `
+Dear ${name},
+
+We have received your registration for the conference: ${conferenceTitle}.
+
+The organizing team will review your registration and payment and get back to you if needed.
+
+Thank you for registering!
+
+Best regards,
+The Organizing Team
+    `;
+    const participantHtml = `
+<p>Dear ${name},</p>
+<p>We have received your registration for the conference: <strong>${conferenceTitle}</strong>.</p>
+<p>The organizing team will review your registration and payment and get back to you if needed.</p>
+<p>Thank you for registering!</p>
+<p>Best regards,<br/>The Organizing Team</p>
+    `;
+
+    await sendEmail(email, participantSubject, participantText, participantHtml);
+
+    // =========================
+    // EMAIL TO ORGANIZERS
+    // =========================
+    const organizerSubject = `New Participant Registration: "${conferenceTitle}"`;
+
+    const organizerText = `
+Dear Organizer,
+
+A new participant has registered for the conference: ${conferenceTitle}.
+
+Participant Details:
+- Name: ${name}
+- Email: ${email}
+- Contact: ${contact}
+- Registration Type: ${registerAs === "presenter" ? "Presenter" : "Participant"}
+- Amount Paid: Rs ${amount}
+
+Please review their registration and payment receipt.
+
+Best regards,
+Conference Management System
+    `;
+
+    const organizerHtml = `
+<p>Dear Organizer,</p>
+<p>A new participant has registered for the conference: <strong>${conferenceTitle}</strong>.</p>
+<p><strong>Participant Details:</strong></p>
+<ul>
+<li>Name: ${name}</li>
+<li>Email: ${email}</li>
+<li>Contact: ${contact}</li>
+<li>Registration Type: ${registerAs === "presenter" ? "Presenter" : "Participant"}</li>
+<li>Amount Paid: Rs ${amount}</li>
+</ul>
+<p>Please review their registration and payment receipt.</p>
+<p>Best regards,<br/>Conference Management System</p>
+    `;
+
+   
+     
+        await sendEmail(organizerEmail, organizerSubject, organizerText, organizerHtml);
+      
+    
+
+    return ctx.send({
+      message: "Participant registered successfully, emails sent",
+      participantId: participant.id,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return ctx.internalServerError("Registration failed");
+  }
+},
+
+   
+async sendEmailToParticipant(ctx) {
+  try {
+    const { email, message, confId } = ctx.request.body;
+
+    if (!email || !message || !confId) {
+      return ctx.badRequest("Email, message, and confId are required.");
+    }
+
+    // Fetch conference info
+    const conf = await strapi.db.query("api::conference.conference").findOne({
+      where: { id: confId },
+    });
+
+    if (!conf) {
+      return ctx.notFound("Conference not found");
+    }
+
+    const conferenceTitle = conf.Conference_title;
+
+    // Compose professional email
+    const emailSubject = `"${conferenceTitle}" Organizer Response`;
+
+    const emailText = `
+Dear Participant,
+
+You are receiving this message regarding the conference: ${conferenceTitle}.
+
+${message}
+
+Best regards,
+The Organizer Team
+    `;
+
+    const emailHtml = `
+<p>Dear Participant,</p>
+<p>You are receiving this message regarding the conference: <strong>${conferenceTitle}</strong>.</p>
+<p>${message}</p>
+<p>Best regards,</p>
+<p>The Organizer Team</p>
+    `;
+
+    // ✅ Use your existing sendEmail helper
+    await sendEmail(email, emailSubject, emailText, emailHtml);
+
+    return ctx.send({ message: "Email sent successfully" });
+  } catch (err) {
+    console.error("Error sending email:", err);
+    return ctx.internalServerError("Failed to send email");
+  }
+}
+
+  
+
+
 
 
 

@@ -102,6 +102,16 @@
       "relation": "oneToMany",
       "target": "api::reviewer-invitation.reviewer-invitation",
       "mappedBy": "conference"
+    },
+    "participants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::participant.participant",
+      "mappedBy": "conference"
+    },
+    "submissionDisabled": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

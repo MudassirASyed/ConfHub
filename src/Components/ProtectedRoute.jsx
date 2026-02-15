@@ -12,11 +12,19 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (allowedRoles && userDetails) {
     const parsedUser = JSON.parse(userDetails);
-    const userRole = parsedUser.Type; // adjust if your API returns role differently
+    const userRoles = [];
+
+    if (parsedUser.organizerId) userRoles.push("organizer");
+    if (parsedUser.authorId) userRoles.push("author");
+    if (parsedUser.reviewerId) userRoles.push("reviewer");
+   if(parsedUser.Type=="admin")userRoles.push("admin");
+    const hasAccess = allowedRoles.some(role =>
+      userRoles.includes(role)
+    ); 
  const hasSubOrganizerRole = parsedUser.SubOrganizerRole && parsedUser.SubOrganizerRole.length > 0;
 
     // Check if the user's main role is allowed OR if they have a SubOrganizerRole
-    if (!allowedRoles.includes(userRole) && !hasSubOrganizerRole) {
+    if (!hasAccess && !hasSubOrganizerRole) {
       localStorage.clear();
       return <Navigate to="/login" replace />;
     }

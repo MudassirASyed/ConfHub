@@ -10,6 +10,20 @@ const ConferenceDetails = () => {
   const navigate = useNavigate();
   const [conference, setConference] = useState(null);
   const [loading, setLoading] = useState(true);
+const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+const [registerAs, setRegisterAs] = useState("participant");
+const [isSubmitting, setIsSubmitting] = useState(false);
+
+const [formData, setFormData] = useState({
+  name: "",
+  contact: "",
+  email: "",
+  paperId: "",
+  paperTitle:'',
+  amount: "",
+  bankDetails: "",
+  receipt: null,
+});
 
   useEffect(() => {
     const fetchConferenceDetails = async () => {
@@ -34,6 +48,57 @@ const ConferenceDetails = () => {
   localStorage.setItem("selectedConferenceId", confId);
   navigate("/login");
 };
+const handleParticipantRegistration = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);   // START loader
+
+  try {
+    const confId = id;
+
+    const formPayload = new FormData();
+    formPayload.append("conferenceId", confId);
+    formPayload.append("registerAs", registerAs);
+    formPayload.append("name", formData.name);
+    formPayload.append("contact", formData.contact);
+    formPayload.append("email", formData.email);
+    formPayload.append("paperId", formData.paperId || "");
+    formPayload.append("paperTitle", formData.paperTitle || "");
+    formPayload.append("amount", formData.amount);
+    formPayload.append("bankDetails", formData.bankDetails);
+
+    if (formData.receipt) {
+      formPayload.append("receipt", formData.receipt);
+    }
+
+    const res = await axios.post(
+      "https://bzchair-backend.up.railway.app/api/organizers/participant-registration",
+      formPayload,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    alert("Registration submitted successfully!");
+    setShowRegistrationModal(false);
+
+    setFormData({
+      name: "",
+      contact: "",
+      email: "",
+      paperId: "",
+      paperTitle:'',
+      amount: "",
+      bankDetails: "",
+      receipt: null,
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error.response?.data || error);
+    alert("Failed to submit registration");
+  } finally {
+    setIsSubmitting(false);   // STOP loader
+  }
+};
+
+
 
   if (loading) {
     return (
@@ -141,6 +206,25 @@ const ConferenceDetails = () => {
                       Join Conference
                     </button>
                   </div>
+
+                  <div className="mt-6 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-md shadow-sm">
+                    <h3 className="text-lg font-semibold mb-2 text-blue-900">
+                      Conference Participation details
+                    </h3>
+<p className="text-blue-800 mb-4">
+  To participate in this conference, attendees must complete the official
+  registration process. Registration is mandatory for both general participants
+  and paper presenters. Your registration will be considered valid only after
+  successful payment verification and administrative clearance. Please ensure
+  that all submitted details are accurate to avoid delays in approval.
+</p>
+                  <button
+  onClick={() => setShowRegistrationModal(true)}
+  className="mt-4 bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 transition"
+>
+  Conference Registration
+</button>
+</div>
                 </div>
               </div>
             ))
@@ -151,6 +235,132 @@ const ConferenceDetails = () => {
           )}
         </div>
       </div>
+      {showRegistrationModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 relative">
+      
+      <h2 className="text-2xl font-bold mb-6 text-blue-700">
+        Participant Registration Form
+      </h2>
+
+    <form className="space-y-4" onSubmit={handleParticipantRegistration}>
+
+
+        <input
+          type="text"
+          placeholder="Name"
+          className="w-full border rounded-lg px-4 py-2"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+
+        <input
+          type="text"
+          placeholder="Contact Number"
+          className="w-full border rounded-lg px-4 py-2"
+          value={formData.contact}
+          onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full border rounded-lg px-4 py-2"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+
+        <select
+          className="w-full border rounded-lg px-4 py-2"
+          value={registerAs}
+          onChange={(e) => setRegisterAs(e.target.value)}
+        >
+          <option value="participant">Participant</option>
+          <option value="presenter">Presenter (Author)</option>
+        </select>
+
+        {registerAs === "presenter" && (
+          <input
+            type="text"
+            placeholder="Paper ID"
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.paperId}
+            onChange={(e) => setFormData({ ...formData, paperId: e.target.value })}
+          />
+          
+        )}
+         {registerAs === "presenter" && (
+          <input
+            type="text"
+            placeholder="Paper Title"
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.paperTitle}
+            onChange={(e) => setFormData({ ...formData, paperTitle: e.target.value })}
+          />
+          
+        )}
+
+        <input
+          type="number"
+          placeholder="Amount Paid"
+          className="w-full border rounded-lg px-4 py-2"
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+        />
+
+       <div className="flex flex-col gap-2">
+  <label className="text-sm font-semibold text-gray-700">
+    Payment Receipt
+  </label>
+
+  <input
+    type="file"
+    accept="image/*"
+    className="w-full border rounded-lg px-3 py-2 bg-white"
+    onChange={(e) =>
+      setFormData({ ...formData, receipt: e.target.files[0] })
+    }
+  />
+
+  <span className="text-xs text-gray-500">
+    Upload payment receipt (PNG, JPG only)
+  </span>
+</div>
+
+
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => setShowRegistrationModal(false)}
+            className="px-4 py-2 rounded-lg border"
+          >
+            Cancel
+          </button>
+
+        <button
+  type="submit"
+  disabled={isSubmitting}
+  className={`px-6 py-2 rounded-lg text-white flex items-center justify-center gap-2
+    ${isSubmitting 
+      ? "bg-blue-400 cursor-not-allowed" 
+      : "bg-blue-600 hover:bg-blue-700"}`}
+>
+  {isSubmitting ? (
+    <>
+      <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+      Submitting...
+    </>
+  ) : (
+    "Submit"
+  )}
+</button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       <Footer />
     </>
   );

@@ -327,14 +327,21 @@ const AuthorDashboard = () => {
                           <td className="py-3 px-4 text-sm text-gray-700">
                             {conference.Submission_deadline}
                           </td>
-                          <td className="py-3 px-4 text-sm">
-                            <button
-                              onClick={() => handleSubmitPaper(conference.id)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-                            >
-                              Submit Paper
-                            </button>
-                          </td>
+                         <td className="py-3 px-4 text-sm">
+  {conference.submissionDisabled === true ? (
+    <span className="text-red-500 font-medium">
+      Submission Disabled
+    </span>
+  ) : (
+    <button
+      onClick={() => handleSubmitPaper(conference.id)}
+      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+    >
+      Submit Paper
+    </button>
+  )}
+</td>
+
                         </tr>
                       ))}
                     </tbody>

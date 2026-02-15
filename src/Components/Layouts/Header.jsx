@@ -13,7 +13,7 @@ const Header = () => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef(null); // To detect click outside dropdown
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-
+ const [availableRoles, setAvailableRoles] = useState([]);
     const toggleDropdown = () => {
         setDropdownVisible((prev) => !prev);
     };
@@ -69,13 +69,36 @@ const Header = () => {
 
     const usertype = JSON.parse(localStorage.getItem('userDetails'));
 
-let availableRoles = [];
+ useEffect(() => {
+        const storedUser = localStorage.getItem('userDetails');
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            const roles = []; // Default role
 
-if (usertype?.Type === 'reviewer') {
-    availableRoles = ['Reviewer', 'TPC_Chair'];
-} else if (usertype?.Type === 'author') {
-    availableRoles = ['Author', 'TPC_Chair'];
+           if (Array.isArray(user.SubOrganizerRole) && user.SubOrganizerRole.length > 0) {
+            roles.push('TPC_Chair');
+        }
+            if (
+  user.authorId &&
+  (Array.isArray(user.authorId) ? user.authorId.length > 0 : true)
+) {
+  roles.push('Author');
 }
+if (
+  user.organizerId &&
+  (Array.isArray(user.organizerId) ? user.organizerId.length > 0 : true)
+) {
+  roles.push('Organizer');
+}
+if (
+  user.reviewerId &&
+  (Array.isArray(user.reviewerId) ? user.reviewerId.length > 0 : true)
+) {
+  roles.push('Reviewer');
+}
+            setAvailableRoles(roles);
+        }
+    }, []);
     return (
       <>
         <header className="bg-gray-100 p-4 flex items-center justify-between border-b border-gray-300">

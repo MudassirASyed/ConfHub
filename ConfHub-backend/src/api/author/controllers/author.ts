@@ -119,8 +119,7 @@ export default factories.createCoreController('api::author.author', ({ strapi })
     async loginAuthor(ctx) {
             const { username, password ,role} = ctx.request.body;
             
-            console.log('Request Body:', ctx.request.body); // Log the request to inspect the data
-            
+          
             // Step 1: Fetch user by username or email
             let user;
             try {
@@ -131,20 +130,21 @@ export default factories.createCoreController('api::author.author', ({ strapi })
                     { email: username } // Or check by email
                   ],
                 },
+                populate: ["authorId"]
               });
             } catch (err) {
              // console.error("Error fetching user:", err);
               return ctx.badRequest("Error fetching user.");
             }
+            console.log("rr",user);
             
             if (!user) {
               
               return ctx.badRequest('Invalid credentials');
             }
-            if (user.Type !== 'author') {
-              // If Type is not organizer, return an error
-              return ctx.badRequest('Invalid credentials');
-            }
+           if (!user.authorId) {
+  return ctx.badRequest('Invalid credentials: Not an author');
+}
             if (!user.confirmed  || user.blocked) {
               
               return ctx.internalServerError('Account not approved yet');

@@ -46,7 +46,8 @@ import {
 import { FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
-  const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app";
+  //const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app";
+    const STRAPI_BASE_URL = "http://localhost:1337";
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const OrgConfDetails = () => {
   const [selectedPaper, setSelectedPaper] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newDeadline, setNewDeadline] = useState("");
-
+  const [isSubmissionDisable, setIsSubmissionDisable] = useState("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewDeadline, setReviewDeadline] = useState(false);
 
@@ -155,7 +156,13 @@ const OrgConfDetails = () => {
   const [InvitationSent, setInvitationSent] = useState([]);
   const [AcceptedReviewers, setAcceptedReviewers] = useState([]);
   const [AcceptedNotAssigned, setAcceptedNotAssigned] = useState([]);
-
+const [participants, setParticipants] = useState([]);
+const [activeParticipantTab, setActiveParticipantTab] = useState("participant");
+const [loadingParticipants, setLoadingParticipants] = useState(false);
+const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
+const [emailModalOpen, setEmailModalOpen] = useState(false);
+const [selectedParticipant, setSelectedParticipant] = useState(null);
+const [emailMessage, setEmailMessage] = useState("");
   useEffect(() => {
     const fetchReviewers = async () => {
       try {
@@ -203,9 +210,9 @@ const OrgConfDetails = () => {
         const list = res.data?.data[0]?.reviewer_invitations || [];
 
         const emails = list.map((x) => x.reviewerEmail);
-        console.log("eee", list);
+        // console.log("eee", list);
         setInvitationSent(emails);
-        console.log("invvd", InvitationSent);
+        // console.log("invvd", InvitationSent);
         const accepted = list.filter((i) => i.InvitationStatus === "accepted");
         const acceptedReviewers = accepted.map((item) => {
           const reviewer = item.reviewer || {};
@@ -221,9 +228,9 @@ const OrgConfDetails = () => {
           };
         });
 
-        console.log("accctt", list);
+        // console.log("accctt", list);
         setAcceptedReviewers(acceptedReviewers);
-        console.log("accc2", acceptedReviewers);
+        // console.log("accc2", acceptedReviewers);
         const response = await axios.get(
           `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer&populate[Papers][populate][reviewRequestsConfirmed][populate]=*
@@ -232,7 +239,7 @@ const OrgConfDetails = () => {
         confData = response.data.data;
         setConference(confData);
         setLoading(false);
-        console.log("ddd", confData);
+         console.log("ddd", confData);
         //for invited reviewer acccepted to display in assign modal
         const reviewerData = response.data.data.flatMap((conference) =>
           (conference.reviewer_invitations || [])
@@ -265,12 +272,12 @@ const OrgConfDetails = () => {
         if (confData.length > 0) {
           const papers = confData[0].Papers || []; // No `.data` here
           setSubmittedPapers(papers);
-          console.log("paa", papers);
+          // console.log("paa", papers);
           const acceptedPapers = papers.filter(
             (paper) => paper.finalDecisionByOrganizer === "Accept"
           );
           setAcceptedPapersCount(acceptedPapers.length);
-          console.log(`Number of accepted papers: ${acceptedPapersCount}`);
+          // console.log(`Number of accepted papers: ${acceptedPapersCount}`);
 
           // Initialize review form fields from conference data or use defaults
           const existingFields = [
@@ -281,7 +288,7 @@ const OrgConfDetails = () => {
           setReviewFormFields(existingFields);
         }
       } catch (error) {
-        console.error("Error fetching conference details:", error);
+        // console.error("Error fetching conference details:", error);
         setLoading(false);
       }
     };
@@ -300,8 +307,8 @@ const OrgConfDetails = () => {
     value: reviewer.id,
     label: `${reviewer.name} (${reviewer.email})`,
   }));
-  console.log("inviteReviewerOptions", inviteReviewerOptions);
-  console.log("invvdv", InvitationSent);
+  // console.log("inviteReviewerOptions", inviteReviewerOptions);
+  // console.log("invvdv", InvitationSent);
   const filteredInviteReviewerOptions = inviteReviewerOptions.filter(
     (reviewer) => {
       // extract email from: "Name (email)"
@@ -311,12 +318,12 @@ const OrgConfDetails = () => {
     }
   );
 
-  console.log("InvitedReviewers", InvitedReviewers);
-  console.log("filteredInviteReviewerOptions", filteredInviteReviewerOptions);
+  // console.log("InvitedReviewers", InvitedReviewers);
+  // console.log("filteredInviteReviewerOptions", filteredInviteReviewerOptions);
 
   const handleShowReviews = (paperId) => {
     const paper = submittedPapers.find((p) => p.id === paperId);
-    console.log("rr", paper.review);
+    // console.log("rr", paper.review);
 
     if (paper) {
       setSelectedReviews(paper.review); // Set the reviews for the selected paper
@@ -342,7 +349,7 @@ const OrgConfDetails = () => {
         paperId: selectedPaper.id,
         decision,
       };
-      console.log("payy", payload);
+      // console.log("payy", payload);
 
       const response = await axios.post(
         "https://bzchair-backend.up.railway.app/api/organizers/final-decision",
@@ -351,14 +358,14 @@ const OrgConfDetails = () => {
       );
 
       if (response.status === 200) {
-        console.log("Decision sent successfully:", response.data);
+        // console.log("Decision sent successfully:", response.data);
         window.location.reload();
         handleCloseModal(); // Close the modal after submitting the decision
       } else {
-        console.error("Failed to send decision:", response.data);
+        // console.error("Failed to send decision:", response.data);
       }
     } catch (error) {
-      console.error("Error sending decision:", error);
+      // console.error("Error sending decision:", error);
     }
   };
 
@@ -371,7 +378,7 @@ const OrgConfDetails = () => {
     const reviewDate = reviewDeadline;
     const submissionDate = conference[0].Submission_deadline;
     const startDate = conference[0].Start_date;
-    console.log("datee", submissionDate, "--", reviewDate, "--", startDate);
+    // console.log("datee", submissionDate, "--", reviewDate, "--", startDate);
 
     if (reviewDate <= submissionDate) {
       alert("Review deadline must be after the submission deadline");
@@ -401,7 +408,7 @@ const OrgConfDetails = () => {
         setShowReviewModal(false);
       }
     } catch (error) {
-      console.error("Error updating review deadline:", error);
+      // console.error("Error updating review deadline:", error);
     }
   };
 
@@ -424,7 +431,7 @@ const OrgConfDetails = () => {
         navigate("/OrganizerDashboard");
       }
     } catch (error) {
-      console.error("Error updating conference status:", error);
+      // console.error("Error updating conference status:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -489,6 +496,7 @@ const OrgConfDetails = () => {
     setNewStartDate(conference[0]?.Start_date || "");
     setConferenceTopics(conference[0]?.Conference_Topics || "");
     setConferenceTracks(conference[0].conferenceTracks || []);
+     setIsSubmissionDisable(conference[0]?.submissionDisabled?? false);
     setIsEditModalOpen(true);
   };
 
@@ -533,7 +541,7 @@ const OrgConfDetails = () => {
 
   const handleInviteReviewers = (confId) => {
     setCurrentConfId(confId);
-    console.log("cc", confId);
+    //console.log("cc", confId);
 
     setIsInviteModalOpen(true);
   };
@@ -575,7 +583,7 @@ const OrgConfDetails = () => {
       setIsInviteModalOpen(false); // you mentioned this one
 
       // refresh window
-      window.location.reload();
+      //window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error("Failed to send invitations");
@@ -590,8 +598,7 @@ const OrgConfDetails = () => {
       const res = await axios.get(
         `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate=reviewer_invitations`
       );
-      console.log("invv", res.data.data);
-
+      
       const list = res.data?.data[0]?.reviewer_invitations || [];
       setInvitations(list);
       console.log("invv", invitations);
@@ -656,6 +663,39 @@ const OrgConfDetails = () => {
       }
     });
   };
+const handleViewParticipants = (confId) => {
+  setCurrentConfId(confId);
+  setIsParticipantModalOpen(true);
+  fetchParticipants(confId);
+};
+
+  const fetchParticipants = async (confId) => {
+  try {
+    setLoadingParticipants(true);
+
+    const res = await axios.get(
+      `https://bzchair-backend.up.railway.app/api/participants?filters[conference][id][$eq]=${id}&populate=*`
+    );
+console.log('partic',res.data.data);
+
+    setParticipants(res.data.data);
+  } catch (err) {
+    console.error("Failed to fetch participants", err);
+  } finally {
+    setLoadingParticipants(false);
+  }
+};
+
+const openEmailModal = (participant) => {
+  setSelectedParticipant(participant);
+  setEmailMessage("");
+  setEmailModalOpen(true);
+};
+
+const closeEmailModal = () => {
+  setSelectedParticipant(null);
+  setEmailModalOpen(false);
+};
   // compute tomorrow's date in yyyy-mm-dd for the input min attribute
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -956,6 +996,33 @@ const OrgConfDetails = () => {
                           </div>
                         </div>
                       </div>
+                       <div className="bg-white/70 backdrop-blur-lg p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300">
+  <div className="flex items-center justify-between">
+    <div className="flex items-center gap-4">
+      <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+        <Users className="w-6 h-6 text-white" />
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          Registration Management
+        </h3>
+        <p className="text-lg font-bold text-gray-800">
+          Participants & Presenters
+        </p>
+      </div>
+    </div>
+
+    <button
+      onClick={() => handleViewParticipants(conf.id)}
+      className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:scale-105 transition-all"
+    >
+      <Eye className="w-4 h-4" />
+      View Registrations
+    </button>
+  </div>
+</div>
+
 
                       {/* Review Form Configuration */}
                       {conf.Status !== "completed" && (
@@ -1747,6 +1814,37 @@ const OrgConfDetails = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
                   />
                 </div>
+                 <div className="mb-6">
+  {/* Top Row */}
+  <div className="flex items-center justify-between">
+    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <Calendar className="w-4 h-4" />
+      <span>Disable Paper Submission</span>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setIsSubmissionDisable(!isSubmissionDisable)}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+        isSubmissionDisable ? "bg-red-500" : "bg-green-400"
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+          isSubmissionDisable ? "translate-x-6" : "translate-x-1"
+        }`}
+      />
+    </button>
+  </div>
+
+  {/* Status Text */}
+  <p className="mt-2 text-sm text-gray-500">
+    {isSubmissionDisable
+      ? "Submissions are currently disabled"
+      : "Submissions are currently open"}
+  </p>
+</div>
+
 
                 {/* Start Date */}
                 <div className="mb-6">
@@ -1848,6 +1946,7 @@ const OrgConfDetails = () => {
                           id: conference[0].id,
                           Submission_deadline: newDeadline,
                           Start_date: newStartDate,
+                          submissionDisabled: isSubmissionDisable,
                           Conference_title: conferenceTitle,
                           Conference_Topics: conferenceTopics,
                           conferenceTracks: conferenceTracks.filter(
@@ -2442,6 +2541,194 @@ const OrgConfDetails = () => {
             </div>
           </div>
         )}
+        {isParticipantModalOpen && (
+<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+
+  <div className="bg-white w-full max-w-6xl rounded-3xl shadow-2xl overflow-hidden">
+
+    {/* HEADER */}
+    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-5 flex justify-between items-center">
+      <h2 className="text-xl font-bold flex items-center gap-2">
+        <Users className="w-5 h-5" />
+        Conference Registrations
+      </h2>
+
+      <button onClick={()=>setIsParticipantModalOpen(false)}>
+        <X/>
+      </button>
+    </div>
+
+    {/* TOGGLE */}
+    <div className="flex gap-3 p-4 border-b">
+     {["participant","Presenter"].map(type => (
+  <button
+    key={type}
+    onClick={() => setActiveParticipantTab(type)}
+    className={`px-4 py-2 rounded-xl font-semibold transition
+      ${activeParticipantTab === type
+        ? "bg-indigo-600 text-white shadow"
+        : "bg-gray-100 text-gray-600"}`}
+  >
+    {type === "participant" ? "Participants" : "Presenters"}
+  </button>
+))}
+
+    </div>
+
+    {/* TABLE */}
+  
+<div className="p-5 max-h-[70vh] overflow-y-auto">
+
+  {loadingParticipants ? (
+    <div className="text-center py-10">Loading...</div>
+  ) : (
+
+    <table className="w-full text-sm">
+      <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+        <tr>
+          <th className="p-3 text-left">Name</th>
+          <th className="p-3 text-left">Email</th>
+          <th className="p-3 text-left">Amount</th>
+          <th className="p-3 text-left">Receipt</th>
+
+          {/* Only show Paper ID column if active tab is Presenter */}
+          {activeParticipantTab === "Presenter" && (
+            <th className="p-3 text-left">Paper ID</th>
+          )}
+           {activeParticipantTab === "Presenter" && (
+            <th className="p-3 text-left">Paper Title</th>
+          )}
+
+          <th className="p-3 text-left">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {participants
+          .filter(p => p.registrationType === activeParticipantTab)
+          .map(p => {
+            const receipt = p.receipt?.url;
+            return (
+              <tr key={p.id} className="border-b hover:bg-gray-50">
+                <td className="p-3 font-medium">{p.Name}</td>
+                <td className="p-3">{p.email}</td>
+                <td className="p-3 font-semibold text-green-600">
+                  Rs {p.amountPaid}
+                </td>
+
+                <td className="p-3">
+                  {receipt ? (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(`http://localhost:1337${receipt}`);
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `participant-${p.Name}.png`;
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                          console.error("Download failed", err);
+                        }
+                      }}
+                      className="flex items-center gap-2 text-indigo-600 hover:underline"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </button>
+                  ) : (
+                    <span className="text-gray-400">No receipt</span>
+                  )}
+                </td>
+
+                {/* Paper ID for presenters */}
+                {activeParticipantTab === "Presenter" && (
+                  <td className="p-3">{p.papertoPresent?.id || "N/A"}</td>
+                )}
+                 {activeParticipantTab === "Presenter" && (
+                  <td className="p-3">{p.paperTitle || "N/A"}</td>
+                )}
+
+                <td className="p-3">
+                  <button
+                    onClick={() => openEmailModal(p)}
+                    className="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700"
+                  >
+                    Send Email
+                  </button>
+                </td>
+
+              </tr>
+            )
+          })
+        }
+      </tbody>
+    </table>
+
+  )}
+</div>
+
+  </div>
+</div>
+)}
+{emailModalOpen && selectedParticipant && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+      {/* HEADER */}
+      <div className="bg-indigo-600 text-white p-5 flex justify-between items-center">
+        <h2 className="text-lg font-bold">Send Email</h2>
+        <button onClick={closeEmailModal}>
+          <X />
+        </button>
+      </div>
+
+      {/* BODY */}
+      <div className="p-5 flex flex-col gap-4">
+        <div>
+          <p>
+            <strong>Name:</strong> {selectedParticipant.Name}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedParticipant.email}
+          </p>
+        </div>
+
+        <textarea
+          value={emailMessage}
+          onChange={(e) => setEmailMessage(e.target.value)}
+          placeholder="Enter your message"
+          className="w-full border p-3 rounded-lg resize-none"
+          rows={5}
+        ></textarea>
+
+        <button
+          onClick={async () => {
+            try {
+              await axios.post("https://bzchair-backend.up.railway.app/api/organizers/send-email", {
+                email: selectedParticipant.email,
+                message: emailMessage,
+                confId:id
+              });
+              alert("Email sent successfully!");
+              closeEmailModal();
+            } catch (err) {
+              console.error(err);
+              alert("Failed to send email");
+            }
+          }}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          Send Email
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
       <Footer />
     </>
