@@ -726,12 +726,14 @@ const downloadCompleteList = () => {
   // Presenters Section
   // -------------------
   csvContent += "Presenters\n";
-  csvContent += "Name,Email,Amount Paid,Paper ID\n";
+  csvContent += "Name,Email,Contact Number,Amount Paid,Paper ID,Paper Title\n";
 
   presenters.forEach(p => {
     const paperId = p.papertoPresent?.id || "N/A";
+    const paperTitle = p.paperTitle || "N/A";
+    const contact = p.contactNumber || "N/A";
 
-    csvContent += `"${p.Name}","${p.email}","Rs ${p.amountPaid}","${paperId}"\n`;
+    csvContent += `"${p.Name}","${p.email}","${contact}","Rs ${p.amountPaid}","${paperId}","${paperTitle}"\n`;
   });
 
   csvContent += "\n";
@@ -740,10 +742,12 @@ const downloadCompleteList = () => {
   // Participants Section
   // -------------------
   csvContent += "Participants\n";
-  csvContent += "Name,Email,Amount Paid\n";
+  csvContent += "Name,Email,Contact Number,Amount Paid\n";
 
   participantList.forEach(p => {
-    csvContent += `"${p.Name}","${p.email}","Rs ${p.amountPaid}"\n`;
+    const contact = p.contactNumber || "N/A";
+
+    csvContent += `"${p.Name}","${p.email}","${contact}","Rs ${p.amountPaid}"\n`;
   });
 
   // Create downloadable CSV
