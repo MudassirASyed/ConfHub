@@ -200,102 +200,102 @@ const [emailMessage, setEmailMessage] = useState("");
     setSelectedExistingReviewers(selectedOptions || []);
   };
   let confData;
-  useEffect(() => {
-    const fetchConferenceDetails = async () => {
-      try {
-        //for already invited reviewer for conference
-        const res = await axios.get(
+useEffect(() => {
+  const fetchConferenceDetails = async () => {
+    try {
+       const res = await axios.get(
           `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[reviewer_invitations][populate]=reviewer`
         );
-        const list = res.data?.data[0]?.reviewer_invitations || [];
+      const list = res.data?.data[0]?.reviewer_invitations || [];
 
-        const emails = list.map((x) => x.reviewerEmail);
-        // console.log("eee", list);
-        setInvitationSent(emails);
-        // console.log("invvd", InvitationSent);
-        const accepted = list.filter((i) => i.InvitationStatus === "accepted");
-        const acceptedReviewers = accepted.map((item) => {
-          const reviewer = item.reviewer || {};
+      const emails = list.map((x) => x.reviewerEmail);
+      setInvitationSent(emails);
+      const accepted = list.filter((i) => i.InvitationStatus === "accepted");
+      const acceptedReviewers = accepted.map((item) => {
+        const reviewer = item.reviewer || {};
 
-          return {
-            value: reviewer.id || null,
-            firstName: reviewer.firstName || "",
-            lastName: reviewer.lastName || "",
-            email: item.reviewerEmail || "", // <-- email is on invitation, not reviewer
-            label: `${reviewer.firstName || ""} ${reviewer.lastName || ""}(${
-              item.reviewerEmail
-            })`.trim(),
-          };
-        });
+        return {
+          value: reviewer.id || null,
+          firstName: reviewer.firstName || "",
+          lastName: reviewer.lastName || "",
+          email: item.reviewerEmail || "",
+          label: `${reviewer.firstName || ""} ${reviewer.lastName || ""}(${item.reviewerEmail})`.trim(),
+        };
+      });
 
-        // console.log("accctt", list);
-        setAcceptedReviewers(acceptedReviewers);
-        // console.log("accc2", acceptedReviewers);
-        const response = await axios.get(
+      setAcceptedReviewers(acceptedReviewers);
+
+    const response = await axios.get(
           `https://bzchair-backend.up.railway.app/api/conferences?filters[id][$eq]=${id}&populate[Papers][populate][file][populate]=*
 &populate[Papers][populate][review][populate]=reviewer&populate[Papers][populate][reviewRequestsConfirmed][populate]=*
 &populate[Organizer][populate]=*`
         );
-        confData = response.data.data;
-        setConference(confData);
-        setLoading(false);
-         console.log("ddd", confData);
-         setConferenceTitle(conference[0]?.Conference_title || "");
-        //for invited reviewer acccepted to display in assign modal
-        const reviewerData = response.data.data.flatMap((conference) =>
-          (conference.reviewer_invitations || [])
-            .filter(
-              (inv) => inv.InvitationStatus === "accepted" && inv.reviewer
-            )
-            .map((inv) => ({
-              id: inv.reviewer.id,
-              name: `${inv.reviewer.firstName || ""} ${
-                inv.reviewer.lastName || ""
-              }`.trim(),
-              email: inv.reviewerEmail || inv.reviewer.email,
-            }))
+
+       confData = response.data.data;
+      setConference(confData);
+
+      setConferenceTitle(confData[0]?.Conference_title || "");
+
+      setLoading(false);
+
+      const reviewerData = response.data.data.flatMap((conference) =>
+        (conference.reviewer_invitations || [])
+          .filter(
+            (inv) => inv.InvitationStatus === "accepted" && inv.reviewer
+          )
+          .map((inv) => ({
+            id: inv.reviewer.id,
+            name: `${inv.reviewer.firstName || ""} ${
+              inv.reviewer.lastName || ""
+            }`.trim(),
+            email: inv.reviewerEmail || inv.reviewer.email,
+          }))
+      );
+
+      setReviewers(reviewerData);
+
+      const invitedReviewers = response.data.data.flatMap((conference) =>
+        (conference.reviewer_invitations || [])
+          .filter((inv) => inv.reviewer)
+          .map((inv) => ({
+            id: inv.reviewer.id,
+            name: `${inv.reviewer.firstName || ""} ${
+              inv.reviewer.lastName || ""
+            }`.trim(),
+            email: inv.reviewerEmail || inv.reviewer.email,
+          }))
+      );
+
+      setInvitedReviewers(invitedReviewers);
+
+      if (confData.length > 0) {
+        const papers = confData[0].Papers || [];
+
+        setSubmittedPapers(papers);
+
+        // ❌ REMOVE THIS LOG (it shows old state)
+        // console.log("submittedPapers", submittedPapers);
+
+        const acceptedPapers = papers.filter(
+          (paper) => paper.finalDecisionByOrganizer === "Accept"
         );
-        setReviewers(reviewerData);
-        const invitedReviewers = response.data.data.flatMap((conference) =>
-          (conference.reviewer_invitations || [])
-            .filter((inv) => inv.reviewer) // ✅ only keep those with a valid reviewer
-            .map((inv) => ({
-              id: inv.reviewer.id,
-              name: `${inv.reviewer.firstName || ""} ${
-                inv.reviewer.lastName || ""
-              }`.trim(),
-              email: inv.reviewerEmail || inv.reviewer.email,
-            }))
-        );
 
-        setInvitedReviewers(invitedReviewers);
+        setAcceptedPapersCount(acceptedPapers.length);
 
-        if (confData.length > 0) {
-          const papers = confData[0].Papers || []; // No `.data` here
-          setSubmittedPapers(papers);
-          // console.log("paa", papers);
-          const acceptedPapers = papers.filter(
-            (paper) => paper.finalDecisionByOrganizer === "Accept"
-          );
-          setAcceptedPapersCount(acceptedPapers.length);
-          // console.log(`Number of accepted papers: ${acceptedPapersCount}`);
+        const existingFields = [
+          ...(confData[0].reviewFormFields || []),
+          ...defaultReviewCriteria,
+        ];
 
-          // Initialize review form fields from conference data or use defaults
-          const existingFields = [
-            ...(confData[0].reviewFormFields || []),
-            ...defaultReviewCriteria,
-          ];
-
-          setReviewFormFields(existingFields);
-        }
-      } catch (error) {
-        // console.error("Error fetching conference details:", error);
-        setLoading(false);
+        setReviewFormFields(existingFields);
       }
-    };
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
-    fetchConferenceDetails();
-  }, [id]);
+  fetchConferenceDetails();
+}, [id]);
   //  const reviewerOptions = reviewers.map((reviewer) => ({
   //     value: reviewer.id,
   //     label: `${reviewer.name} (${reviewer.email})`,
