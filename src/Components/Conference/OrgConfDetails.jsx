@@ -731,7 +731,7 @@ const downloadCompleteList = () => {
   presenters.forEach(p => {
     const paperId = p.papertoPresent?.id || "N/A";
     const paperTitle = p.paperTitle || "N/A";
-    const contact = p.contactNumber || "N/A";
+    const contact = p.contact || "N/A";
 
     csvContent += `"${p.Name}","${p.email}","${contact}","Rs ${p.amountPaid}","${paperId}","${paperTitle}"\n`;
   });
@@ -745,7 +745,7 @@ const downloadCompleteList = () => {
   csvContent += "Name,Email,Contact Number,Amount Paid\n";
 
   participantList.forEach(p => {
-    const contact = p.contactNumber || "N/A";
+    const contact = p.contact || "N/A";
 
     csvContent += `"${p.Name}","${p.email}","${contact}","Rs ${p.amountPaid}"\n`;
   });
