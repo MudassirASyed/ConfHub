@@ -91,8 +91,14 @@ const handleParticipantRegistration = async (e) => {
     });
 
   } catch (error) {
-    console.error("Registration error:", error.response?.data || error);
-    alert("Failed to submit registration");
+    console.error("Registration error:", error.message);
+    const errorMessage =
+    error.response?.data?.error?.message ||
+    error.response?.data?.message ||
+    error.message ||
+    "Failed to submit registration";
+
+  alert(errorMessage);
   } finally {
     setIsSubmitting(false);   // STOP loader
   }
@@ -236,9 +242,8 @@ const handleParticipantRegistration = async (e) => {
         </div>
       </div>
       {showRegistrationModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 relative">
-      
+ <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+  <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto">
       <h2 className="text-2xl font-bold mb-6 text-blue-700">
         Participant Registration Form
       </h2>
