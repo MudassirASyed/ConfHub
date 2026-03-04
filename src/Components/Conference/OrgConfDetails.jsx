@@ -46,8 +46,8 @@ import {
 import { FiDownload } from "react-icons/fi";
 
 const OrgConfDetails = () => {
-  //const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app";
-    const STRAPI_BASE_URL = "http://localhost:1337";
+  const STRAPI_BASE_URL = "https://bzchair-backend.up.railway.app";
+  //const STRAPI_BASE_URL = "http://localhost:1337";
   const [state, setState] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -240,6 +240,7 @@ const [emailMessage, setEmailMessage] = useState("");
         setConference(confData);
         setLoading(false);
          console.log("ddd", confData);
+         setConferenceTitle(conference[0]?.Conference_title || "");
         //for invited reviewer acccepted to display in assign modal
         const reviewerData = response.data.data.flatMap((conference) =>
           (conference.reviewer_invitations || [])
@@ -326,7 +327,7 @@ const [emailMessage, setEmailMessage] = useState("");
     // console.log("rr", paper.review);
 
     if (paper) {
-      setSelectedReviews(paper.review); // Set the reviews for the selected paper
+      setSelectedReviews(paper.review);   
       setIsModalOpen(true); // Open the modal
       setSelectedPaper(paper);
     }
@@ -462,7 +463,12 @@ const [emailMessage, setEmailMessage] = useState("");
   const handleRemoveCustomField = (fieldId) => {
     setReviewFormFields((prev) => prev.filter((field) => field.id !== fieldId));
   };
-
+const iconMap = {
+  significance: Target,
+  originality: Zap,
+  presentation: FileText,
+  Recommendations: Award,
+};
   const handleSaveReviewFormFields = async () => {
     try {
       const checkedFields = reviewFormFields.filter((field) => field.enabled); // use 'enabled'
@@ -695,6 +701,65 @@ const openEmailModal = (participant) => {
 const closeEmailModal = () => {
   setSelectedParticipant(null);
   setEmailModalOpen(false);
+};
+
+const downloadCompleteList = () => {
+  if (!participants || participants.length === 0) {
+    alert("No registration data available");
+    return;
+  }
+
+  const presenters = participants.filter(
+    p => p.registrationType === "Presenter"
+  );
+
+  const participantList = participants.filter(
+    p => p.registrationType === "participant"
+  );
+
+  let csvContent = "";
+
+  // Conference Heading
+  csvContent += `${conferenceTitle || "Conference"} Registrations\n\n`;
+
+  // -------------------
+  // Presenters Section
+  // -------------------
+  csvContent += "Presenters\n";
+  csvContent += "Name,Email,Amount Paid,Paper ID\n";
+
+  presenters.forEach(p => {
+    const paperId = p.papertoPresent?.id || "N/A";
+
+    csvContent += `"${p.Name}","${p.email}","Rs ${p.amountPaid}","${paperId}"\n`;
+  });
+
+  csvContent += "\n";
+
+  // -------------------
+  // Participants Section
+  // -------------------
+  csvContent += "Participants\n";
+  csvContent += "Name,Email,Amount Paid\n";
+
+  participantList.forEach(p => {
+    csvContent += `"${p.Name}","${p.email}","Rs ${p.amountPaid}"\n`;
+  });
+
+  // Create downloadable CSV
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute(
+    "download",
+    `${conferenceTitle || "Conference"}_Registrations.csv`
+  );
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
   // compute tomorrow's date in yyyy-mm-dd for the input min attribute
   const today = new Date();
@@ -1603,7 +1668,7 @@ const closeEmailModal = () => {
                                 ];
                                 const color =
                                   colors[fieldIndex % colors.length];
-                                const IconComponent = field.icon || Target;
+                               const IconComponent = iconMap[field.id] || Target;
 
                                 return (
                                   <div
@@ -2104,7 +2169,7 @@ const closeEmailModal = () => {
                     {reviewFormFields
                       .filter((field) => !field.isCustom)
                       .map((field) => {
-                        const IconComponent = field.icon || Target;
+                    const IconComponent = iconMap[field.id] || Target;
                         return (
                           <label
                             key={field.id}
@@ -2559,21 +2624,29 @@ const closeEmailModal = () => {
     </div>
 
     {/* TOGGLE */}
-    <div className="flex gap-3 p-4 border-b">
-     {["participant","Presenter"].map(type => (
-  <button
-    key={type}
-    onClick={() => setActiveParticipantTab(type)}
-    className={`px-4 py-2 rounded-xl font-semibold transition
-      ${activeParticipantTab === type
-        ? "bg-indigo-600 text-white shadow"
-        : "bg-gray-100 text-gray-600"}`}
-  >
-    {type === "participant" ? "Participants" : "Presenters"}
-  </button>
-))}
+    <div className="flex justify-between items-center p-4 border-b">
+     <div className="flex gap-3">
+    {["participant","Presenter"].map(type => (
+      <button
+        key={type}
+        onClick={() => setActiveParticipantTab(type)}
+        className={`px-4 py-2 rounded-xl font-semibold transition
+          ${activeParticipantTab === type
+            ? "bg-indigo-600 text-white shadow"
+            : "bg-gray-100 text-gray-600"}`}
+      >
+        {type === "participant" ? "Participants" : "Presenters"}
+      </button>
+    ))}
+  </div>
 
-    </div>
+  <button
+    onClick={downloadCompleteList}
+    className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-semibold"
+  >
+    Download Complete List
+  </button>
+</div>
 
     {/* TABLE */}
   
@@ -2621,7 +2694,7 @@ const closeEmailModal = () => {
                     <button
                       onClick={async () => {
                         try {
-                          const response = await fetch(`http://localhost:1337${receipt}`);
+                          const response = await fetch(`https://bzchair-backend.up.railway.app${receipt}`);
                           const blob = await response.blob();
                           const url = window.URL.createObjectURL(blob);
                           const a = document.createElement('a');
